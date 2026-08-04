@@ -1029,6 +1029,7 @@ def set_rules(world: "WL3World") -> None:
         
     if world.options.enemizer:
         add_tf(coin_logic["Out of the Woods"], 1, _has("Fire Form"), can_pound_solid_blocks)
+        add_tf(coin_logic["Out of the Woods"], 2, _has("Puffy Form"))
         add_tf(coin_logic["Out of the Woods"], 4, can_bounce)
         add_tf(coin_logic["Out of the Woods"], 6, _has("Flat Form"), _has("Roll Form"))
         add_tf(coin_logic["Out of the Woods"], 7, _has("Fat Form"), _has("Zombie Form"))
