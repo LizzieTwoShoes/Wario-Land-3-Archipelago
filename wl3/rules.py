@@ -176,7 +176,7 @@ CHEST_RULES: dict = {
     "Out of the Woods": [
         None,                                                                        # grey
         can_pound_cracked_blocks,                                                    # red
-        _o(_c(has_storm_pouch, _has("High Jump Boots")), can_fly),                   # green
+        _o(has_storm_pouch, can_fly),                                                # green
         _c(_has("Gold Magic"), has_grab_1, has_overalls_1, can_jump_high),           # blue
     ],
     "The Peaceful Village": [
@@ -525,7 +525,7 @@ COIN_RULES: dict = {
         _o(_c(_has("High Jump Boots"), has_grab_1), _has("Puffy Form")),                #1
         None,                                                                           #2
         _o(can_shake_screen,can_fly),                                                   #3
-        _o(has_flippers_2, _c(has_storm_pouch,_has("High Jump Boots")), can_fly),       #4
+        _o(has_flippers_1, has_storm_pouch, can_fly),                                   #4
         can_jump_high,                                                                  #5
         None,                                                                           #6
         can_pound_cracked_blocks,                                                       #7
@@ -604,7 +604,7 @@ COIN_RULES: dict = {
         _o(_has("Truck Wheel"),has_vampire_2),                                          #5
         _o(_has("Truck Wheel"),can_fly),                                                #6
         _o(_has("Truck Wheel"),can_fly),                                                #7
-        _c(_o(_has("Foot of Stone"),_has("Roll Form")),has_flippers_1),                                       #8
+        _c(_o(_has("Foot of Stone"),_has("Roll Form")),has_flippers_1),                 #8
     ],
     "The Pool of Rain": [
         _o(_has("Magic Seeds"),_has("Puffy Form")),                                     #1
@@ -901,7 +901,6 @@ def set_rules(world: "WL3World") -> None:
         boss_logic["Yellow Belly"] = _c(_o(can_pound_solid_blocks, _has("Zombie Form")), _o(has_grab_1, can_jump_high), has_overalls_1)
 
     if difficulty >= hard_logic:
-        chest_logic["Out of the Woods"][green] = _o(has_storm_pouch,can_fly)
         chest_logic["Beneath the Waves"][red] = has_flippers_1
         chest_logic["Beneath the Waves"][green] = _c(has_flippers_1,_o(has_grab_1,_has("Yarn Form"),_has("Roll Form")))
         chest_logic["Beneath the Waves"][blue] = _c(has_flippers_1,_o(has_grab_1,_has("Fat Form")))
@@ -911,7 +910,6 @@ def set_rules(world: "WL3World") -> None:
         key_logic["The East Crater"][grey] = _o(has_grab_1,_has("Zombie Form"))
         key_logic["The Frigid Sea"][red] = _o(has_grab_1,can_bounce)
         # Coins are 0 indexed, so one less than their counterparts on the level maps
-        coin_logic["Out of the Woods"][3] = _o(has_flippers_2, has_storm_pouch, can_fly)
         coin_logic["The Pool of Rain"][5] = _c(has_flippers_1,_has("Spiked Helmet"))
         coin_logic["The Pool of Rain"][6] = _c(has_flippers_1,_has("Spiked Helmet"))
         coin_logic["The Frigid Sea"][3] = _o(has_grab_1,can_bounce)        
