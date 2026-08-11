@@ -294,7 +294,7 @@ CHEST_RULES: dict = {
                                           _has("Roll Form"))), can_bounce),          # red
         _c(_has("Scissors"), can_jump_high),                                         # green
         _c(_has("Scissors"), _has("Full Moon Gong"), can_jump_high,
-           _o(_c(_has("High Jump Boots"), has_overalls_2, has_grab_1)), _has("Roll Form")),# blue
+           _o(_c(_has("High Jump Boots"), has_overalls_2, has_grab_1), _has("Roll Form"))),# blue
     ],
     "The Stagnant Swamp": [
         None,                                                                        # grey
@@ -731,7 +731,7 @@ COIN_RULES: dict = {
         _o(has_grab_1,can_fly),                                                         #3
         _o(has_grab_1,can_fly),                                                         #4
         _c(_has("Scepter"),has_flippers_1),                                             #5
-        _c(_has("Scepter"),has_flippers_1,_has("Spiked Helmet"),_has("High Jump Boots")),#6
+        _c(_has("Scepter"),has_flippers_1,_has("Spiked Helmet")),                       #6
         _c(_has("Scepter"),has_flippers_1),                                             #7
         _o(has_sun_medallion,has_flippers_2),                                           #8
     ],
@@ -809,8 +809,6 @@ BOSS_RULES: dict = {
     "Yellow Belly": _c(_o(can_pound_solid_blocks, _has("Zombie Form")), _o(has_grab_1, can_bounce), has_overalls_1),
 }
 
-able_to_beat_rudy = _c(has_grab_2,_o(has_overalls_1,has_vampire_1,_has("Zombie Form"),_has("Fat Form"),_has("Fire Form")))
-
 # ---------------------------------------------------------------------------
 # Main rule-setting function — called from WL3World.set_rules()
 # ---------------------------------------------------------------------------
@@ -843,6 +841,8 @@ def set_rules(world: "WL3World") -> None:
     red = 1
     green = 2
     blue = 3
+    
+    able_to_beat_rudy = _c(has_grab_2,has_overalls_1,_has("High Jump Boots"))
 
     # Override some level requirements depending on difficulty
     if difficulty >= knowledge_checks:
@@ -914,10 +914,10 @@ def set_rules(world: "WL3World") -> None:
         coin_logic["Out of the Woods"][3] = _o(has_flippers_2, has_storm_pouch, can_fly)
         coin_logic["The Pool of Rain"][5] = _c(has_flippers_1,_has("Spiked Helmet"))
         coin_logic["The Pool of Rain"][6] = _c(has_flippers_1,_has("Spiked Helmet"))
-        coin_logic["The Frigid Sea"][3] = _o(has_grab_1,can_bounce)      
-        coin_logic["The Frigid Sea"][5] = _c(_has("Scepter"),has_flippers_1,_has("Spiked Helmet"))    
+        coin_logic["The Frigid Sea"][3] = _o(has_grab_1,can_bounce)        
         coin_logic["The Warped Void"][6] = _o(_c(has_key_cards, has_grab_1,_has("Spiked Helmet")),_c(_has("Warp Removal Apparatus"), can_fly))
         coin_logic["The Warped Void"][7] = _o(_c(has_key_cards, has_grab_1,_has("Spiked Helmet")),_c(_has("Warp Removal Apparatus"), can_fly))
+        able_to_beat_rudy = _c(has_grab_2,_o(has_overalls_1,has_vampire_1,_has("Zombie Form"),_has("Fat Form"),_has("Fire Form")))
 
     # Override some level requirements if glitches are in logic (overwrites difficulty options, we assume glitched players can do most tricks)
     if glitches >= easy_glitches:
