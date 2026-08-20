@@ -285,13 +285,13 @@ _REGULAR: List[tuple] = [
     (0x5d, ItemClassification.progression, "Fire Drencher"),
 
     # crayons
-    (0x5e, ItemClassification.filler,      "Red Crayon"),
-    (0x5f, ItemClassification.filler,      "Brown Crayon"),
-    (0x60, ItemClassification.filler,      "Yellow Crayon"),
-    (0x61, ItemClassification.filler,      "Green Crayon"),
-    (0x62, ItemClassification.filler,      "Cyan Crayon"),
-    (0x63, ItemClassification.filler,      "Blue Crayon"),
-    (0x64, ItemClassification.filler,      "Pink Crayon"),
+    (0x5e, ItemClassification.useful,      "Red Crayon"),
+    (0x5f, ItemClassification.useful,      "Brown Crayon"),
+    (0x60, ItemClassification.useful,      "Yellow Crayon"),
+    (0x61, ItemClassification.useful,      "Green Crayon"),
+    (0x62, ItemClassification.useful,      "Cyan Crayon"),
+    (0x63, ItemClassification.useful,      "Blue Crayon"),
+    (0x64, ItemClassification.useful,      "Pink Crayon"),
 ]
 
 # ---------------------------------------------------------------------------
