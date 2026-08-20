@@ -413,6 +413,12 @@ class InGameMessages(Choice):
     option_nothing      = 2
     default = 0
 
+class ProgressiveGarlic(Toggle):
+    """Disables Wario's shoulder bash and adds another Garlic item.
+    One Garlic allows him to use shoulder bash, two provides vanilla Garlic behavior."""
+    display_name = "Progressive Garlic"
+    default = 0
+
 
 @dataclass
 class WL3Options(PerGameCommonOptions):
@@ -426,6 +432,7 @@ class WL3Options(PerGameCommonOptions):
     key_shuffle:                  KeyShuffle
     keyring_count:                KeyringCount
     transformation_shuffle:       TransformationShuffle
+    progressive_garlic:           ProgressiveGarlic
     music_boxes_required:         MusicBoxesRequired
     music_box_shuffle:            MusicBoxShuffle
     rudy_hit_points:              RudyHitPoints
