@@ -101,9 +101,9 @@ FORM_ICON_FLIPPED_EXTRACTIONS = (
     # motion trail is on the right (matches rolling right visually).
     ("sprite_raw", 0x025000, 2048, 112, 32, TREASURE_ROLL_TILE_OFFSET),
 )
-TREASURE_DUMMY_PAL_OFFSET        = 0x09B462   # TreasureOBPals[$65] — 1 byte (palette index)
+TREASURE_DUMMY_PAL_OFFSET        = 0x09BA77   # TreasureOBPals[$65] — 1 byte (palette index)
 TREASURE_GFX_BASE                = 0x098000   # TreasureGfx[0] — each entry 64 bytes
-TREASURE_PAL_BASE                = 0x09B3FD   # TreasureOBPals[0] — each entry 1 byte
+TREASURE_PAL_BASE                = 0x09BA12   # TreasureOBPals[0] — each entry 1 byte
 KEY_COLOR_PALS = [0x08, 0x05, 0x06, 0x07]    # OBPAL: grey, red, green, blue
 OBPAL_TREASURE_PURPLE = 0x09                  # Combined unlock items
 
@@ -301,7 +301,7 @@ GOLF_PAR_HINT_FREQ_OFFSET        = 0x003A6E   # GolfParHintFrequencyOpt byte in 
 # Vanilla source is `$04`; the AP option lets the player pick 1-10 without
 # touching the ROM layout. Re-audit if hidden_figure.asm changes above line 15.
 RUDY_HIT_POINTS_OFFSET           = 0x04CC94
-TREASURE_OB_PALS_OFFSET          = 0x09B3FD   # TreasureOBPals table (indexed by treasure ID)
+TREASURE_OB_PALS_OFFSET          = 0x09BA12   # TreasureOBPals table (indexed by treasure ID)
 
 # Combined-item companion chains: collecting key → also grant value (chained).
 # Tusk Set: $24→$25→$26 (two hops).
@@ -1489,7 +1489,7 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
         # smashed the treasure requirements table for owlevels 22-25
         # (Colossal Hole, Warped Void, East Crater, Forest of Fear),
         # forcing every high-level variant to fail its treasure check.
-        TITLE_PALETTE_OFFSETS = [0x5209, 0x5249, 0x5289, 0x52c9]
+        TITLE_PALETTE_OFFSETS = [0x5365, 0x53a5, 0x53e5, 0x5425]
         for offset in TITLE_PALETTE_OFFSETS:
             palette_params["overworld_bg"].append({
                 "offset": offset,
