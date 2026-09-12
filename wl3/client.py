@@ -530,12 +530,17 @@ class WL3Client(BizHawkClient):
         # tolerant of BizHawk pauses / laggy hosts. If it depletes to 0 the
         # ROM's ShowTreasureMsg fires — and if the client resumes shortly
         # after, that double-fires the msg. Bigger headroom prevents that.
-        try:
-            await write(ctx.bizhawk_ctx, [
-                (ADDR_CLIENT_HEARTBEAT_WRAM, bytes([240]), "WRAM"),
-            ])
-        except RequestFailedError:
-            pass
+        #
+        # GATE ON SERVER CONNECTION: if we're not connected to AP, the client
+        # can't show pickup msgs (no ctx.item_names to look up), so let the
+        # ROM handle its own offline msgs instead of silencing both sides.
+        if ctx.server is not None and ctx.slot is not None:
+            try:
+                await write(ctx.bizhawk_ctx, [
+                    (ADDR_CLIENT_HEARTBEAT_WRAM, bytes([240]), "WRAM"),
+                ])
+            except RequestFailedError:
+                pass
 
         # Always read game state so we can detect chests even when disconnected.
         try:
