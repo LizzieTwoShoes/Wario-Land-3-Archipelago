@@ -661,13 +661,20 @@ class WL3PatchExtension(APPatchExtension):
                 offset = entry["offset"]
                 length = entry["length"]
                 group_hue = entry["group_hue"]
+                # sat/val multipliers default to 1.0 (identity) for backward-compat
+                # with param files that only carry group_hue.
+                sat_mul = entry.get("group_sat_mul", 1.0)
+                val_mul = entry.get("group_val_mul", 1.0)
                 src = rom if entry.get("source") == "rom" else vanilla
                 data = src[offset:offset + length]
                 result = bytearray()
                 for i in range(length // 8):
                     chunk = data[i * 8:(i + 1) * 8]
                     # rng arg is unused when fixed_hue_rotate is supplied
-                    result.extend(_recolor_palette(chunk, None, fixed_hue_rotate=group_hue))
+                    result.extend(_recolor_palette(chunk, None,
+                                                   fixed_hue_rotate=group_hue,
+                                                   sat_mul=sat_mul,
+                                                   val_mul=val_mul))
                 rom[offset:offset + len(result)] = bytes(result)
 
         return bytes(rom)
@@ -686,7 +693,8 @@ def _floats_to_gbc(r: float, g: float, b: float) -> int:
     """(r, g, b) 0.0–1.0 floats → 15-bit GBC color."""
     return round(r * 31) | (round(g * 31) << 5) | (round(b * 31) << 10)
 
-def _recolor_palette(data: bytes, rand, fixed_hue_rotate: float = None) -> bytes:
+def _recolor_palette(data: bytes, rand, fixed_hue_rotate: float = None,
+                     sat_mul: float = 1.0, val_mul: float = 1.0) -> bytes:
     """Recolor an 8-byte GBC palette.
 
     Every color (near-gray and saturated alike) rotates by the same hue
@@ -698,12 +706,25 @@ def _recolor_palette(data: bytes, rand, fixed_hue_rotate: float = None) -> bytes
     If `fixed_hue_rotate` is provided, it is used as the shared rotation
     instead of a fresh random value — this lets multiple palettes in a
     palette-cycle group share a hue so cycle frames stay coherent.
+
+    `sat_mul` / `val_mul` (both default 1.0 = identity) scale each color's
+    saturation and value uniformly — lets a caller push a whole group
+    vibrant / muted / brighter / darker while keeping the shared hue.
+    Applied only to non-outline colors (same v >= 0.15 gate as the hue).
     """
     grouped = fixed_hue_rotate is not None
     # Hue wraps, so rand()s near 0 or 1 produce near-vanilla shifts. Clamp the
     # rolled value to [0.1, 0.9] so enemy_palette_shuffle always reads as a
     # real recolor.
     hue_rotate = fixed_hue_rotate if grouped else (0.1 + rand() * 0.8)
+    # Non-grouped path (enemy shuffle): also roll per-palette sat/val
+    # multipliers so different enemies vary in vibrance AND brightness,
+    # not just hue. Same ranges as the grouped path. Ignores the caller's
+    # sat_mul/val_mul kwargs entirely — they default to 1.0 and the enemy
+    # path never overrides them.
+    if not grouped:
+        sat_mul = 0.55 + rand() * (1.5 - 0.55)
+        val_mul = 0.75 + rand() * (1.15 - 0.75)
     out = bytearray(len(data))
     for i in range(len(data) // 2):
         color = data[i * 2] | (data[i * 2 + 1] << 8)
@@ -711,6 +732,8 @@ def _recolor_palette(data: bytes, rand, fixed_hue_rotate: float = None) -> bytes
         h, s, v = colorsys.rgb_to_hsv(r, g, b)
         if v >= 0.15:
             h = (h + hue_rotate) % 1.0
+            s = min(1.0, max(0.0, s * sat_mul))
+            v = min(1.0, max(0.0, v * val_mul))
         r, g, b = colorsys.hsv_to_rgb(h, s, v)
         new = _floats_to_gbc(r, g, b)
         out[i * 2]     = new & 0xFF
@@ -1431,12 +1454,19 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
         # but within each level everything stays coherent.
         # Clamp away from 0/1 — hue wraps, so values near either end produce
         # near-vanilla rotations. [0.1, 0.9] guarantees a visible shift.
-        shared_level_hue = world.random.uniform(0.1, 0.9)
+        # Saturation + value multipliers rolled once and shared: some seeds
+        # skew vibrant, others muted, others darker/brighter — same variety
+        # trick as the overworld shuffle.
+        shared_level_hue     = world.random.uniform(0.1, 0.9)
+        shared_level_sat_mul = world.random.uniform(0.55, 1.5)
+        shared_level_val_mul = world.random.uniform(0.75, 1.15)
         for offset, length, _group in LEVEL_BG_PALETTES:
             palette_params["level_bg"].append({
                 "offset": offset,
                 "length": length,
                 "group_hue": shared_level_hue,
+                "group_sat_mul": shared_level_sat_mul,
+                "group_val_mul": shared_level_val_mul,
             })
 
     if world.options.overworld_bg_palette_shuffle:
@@ -1444,7 +1474,11 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
         # types (mountain / ground / grass / etc — each in its own palette
         # entry) stay thematically related instead of rotating independently
         # and clashing at tile borders. Whole map gets uniformly tinted.
-        shared_ow_hue = world.random.uniform(0.1, 0.9)
+        # Saturation + value multipliers are also rolled once and shared, so
+        # some seeds skew vibrant, others muted, others darker/brighter.
+        shared_ow_hue     = world.random.uniform(0.1, 0.9)
+        shared_ow_sat_mul = world.random.uniform(0.55, 1.5)
+        shared_ow_val_mul = world.random.uniform(0.75, 1.15)
         # OVERWORLD_BG_PALETTES includes labels that the engine ALSO uses as
         # OBJ palette sources (loaded into wTempPals2). Recoloring those
         # corrupts overworld OBJ palettes (star indicator, map-side OBJ
@@ -1463,6 +1497,8 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
                 "offset": offset,
                 "length": length,
                 "group_hue": shared_ow_hue,
+                "group_sat_mul": shared_ow_sat_mul,
+                "group_val_mul": shared_ow_val_mul,
             })
         # Title screen palettes — 4 × 64-byte sets (Pals_4f82/_4fc2/_5002/
         # _5042). 4f82+5002 feed wTempPals1 (BG); 4fc2+5042 feed wTempPals2
@@ -1483,6 +1519,8 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
                 "offset": offset,
                 "length": 64,
                 "group_hue": shared_ow_hue,
+                "group_sat_mul": shared_ow_sat_mul,
+                "group_val_mul": shared_ow_val_mul,
                 "source": "rom",
             })
 
@@ -1541,30 +1579,44 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
     custom_overalls = _hex_to_gbc_bytes(str(wc.get("overalls", "")))
     custom_shirt    = _hex_to_gbc_bytes(str(wc.get("shirt", "")))
 
-    # Overalls slot.
+    def _hsv_to_gbc_bytes(h: float, s: float, v: float) -> bytes:
+        """HSV (0-1 each) -> 2 bytes GBC BGR555. Sampling in HSV space
+        (hue + saturation + value rolled independently) guarantees
+        every seed lands on a distinct, clearly-saturated color instead
+        of clustering in mid-gray like independent-RGB rolls do."""
+        r, g, b = colorsys.hsv_to_rgb(h, s, v)
+        r5 = min(31, round(r * 31))
+        g5 = min(31, round(g * 31))
+        b5 = min(31, round(b * 31))
+        gbc = (b5 << 10) | (g5 << 5) | r5
+        return bytes([gbc & 0xFF, (gbc >> 8) & 0xFF])
+
+    # Overalls slot: darker, saturated accent. Sample in HSV so every seed
+    # gets a distinct hue at real saturation, not a mid-gray from
+    # independent RGB rolls.
     if custom_overalls is not None:
         overalls_bytes = custom_overalls
     elif wario_pal in (2, 3):  # overalls or both shuffle
-        r = world.random.randint(0, 23)
-        g = world.random.randint(0, 23)
-        b = world.random.randint(0, 23)
-        overalls_bytes = bytes([((b << 10) | (g << 5) | r) & 0xFF,
-                                (((b << 10) | (g << 5) | r) >> 8) & 0xFF])
+        overalls_bytes = _hsv_to_gbc_bytes(
+            h=world.random.uniform(0.0, 1.0),
+            s=world.random.uniform(0.55, 1.0),
+            v=world.random.uniform(0.20, 0.55),
+        )
     else:
         overalls_bytes = None
     if overalls_bytes is not None:
         for off in WARIO_OVERALLS_OFFSETS:
             patch.write_token(APTokenTypes.WRITE, off, overalls_bytes)
 
-    # Shirt slot.
+    # Shirt slot: brighter, saturated accent. Same HSV-space sampling.
     if custom_shirt is not None:
         shirt_bytes = custom_shirt
     elif wario_pal in (1, 3):  # shirt or both shuffle
-        r = world.random.randint(8, 31)
-        g = world.random.randint(8, 31)
-        b = world.random.randint(8, 31)
-        shirt_bytes = bytes([((b << 10) | (g << 5) | r) & 0xFF,
-                             (((b << 10) | (g << 5) | r) >> 8) & 0xFF])
+        shirt_bytes = _hsv_to_gbc_bytes(
+            h=world.random.uniform(0.0, 1.0),
+            s=world.random.uniform(0.45, 0.95),
+            v=world.random.uniform(0.65, 1.0),
+        )
     else:
         shirt_bytes = None
     if shirt_bytes is not None:
