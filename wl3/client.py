@@ -886,6 +886,7 @@ class WL3Client(BizHawkClient):
             #     tuple(a for a in args if isinstance(a, str)))
             ctx.command_processor.commands["vanillaenemies"] = lambda *_: self._vanillaenemies_command()
             ctx.command_processor.commands["where"] = lambda *_: self._where_command(ctx)
+            ctx.command_processor.commands["enemizerlog"] = lambda *_: self._enemizerlog_command(ctx)
             # ctx.command_processor.commands["dbgtreasures"] = lambda *args: self._dbgtreasures_command(
             #     ctx, tuple(a for a in args if isinstance(a, str)))
             # ctx.command_processor.commands["setwlevel"] = lambda *args: self._setwlevel_command(
@@ -1979,6 +1980,106 @@ class WL3Client(BizHawkClient):
                         f"${slot_rom:06x}, {len(out)} bytes. Leave + re-enter room.")
         except Exception as e:
             logger.info(f"[WL3] /vanillaenemies failed: {e}")
+
+    def _enemizerlog_command(self, ctx: "BizHawkClientContext") -> None:
+        """/enemizerlog — dump the current seed's per-level enemy composition
+        to `enemizer_room_map.txt` in the working directory. Reads ObjectGroups
+        + enemizer slot bytes from the running ROM (no server round-trips)."""
+        async def _do():
+            import os as _os
+            try:
+                from .level_room_wgids import LEVEL_ROOM_WGIDS
+                try:
+                    from .slot_gfx_names import SLOT_GFX_NAMES
+                except Exception:
+                    SLOT_GFX_NAMES = {i: {} for i in range(4)}
+
+                OG_TABLE = 0x65062
+                ENEMIZER_SLOT_BASE_BANK19 = 0x6B58
+                ENEMIZER_ROM_BASE = 0x66B58
+                SLOT_SIZE = 64
+
+                # Read the entire ObjectGroups+enemizer slot region as one
+                # bank (0x64000..0x67FFF = 16 KB) so subsequent decoding is
+                # in-process. If bizhawk balks at 16 KB, split later.
+                rom_start = 0x64000
+                rom_len = 0x4000
+                rom_bytes = (await read(ctx.bizhawk_ctx,
+                    [(rom_start, rom_len, "ROM")]))[0]
+
+                def rom_at(off: int) -> int:
+                    return rom_bytes[off - rom_start]
+
+                def _decode_dispatch(wgid: int):
+                    entry_off = OG_TABLE + wgid * 4
+                    og_ptr = rom_at(entry_off + 2) | (rom_at(entry_off + 3) << 8)
+                    if ENEMIZER_SLOT_BASE_BANK19 <= og_ptr < (
+                            ENEMIZER_SLOT_BASE_BANK19 + 82 * SLOT_SIZE):
+                        slot_offset = og_ptr - ENEMIZER_SLOT_BASE_BANK19
+                        rom_off = ENEMIZER_ROM_BASE + slot_offset
+                        names = []
+                        for i in range(4):
+                            lo = rom_at(rom_off + 1 + i * 2)
+                            hi = rom_at(rom_off + 2 + i * 2)
+                            enc = lo | (hi << 8)
+                            if enc & 0x8000:
+                                source_slot = (enc >> 13) & 3
+                                real_addr = ((enc & 0x1FFF) | 0x4000)
+                                name = SLOT_GFX_NAMES.get(source_slot, {}).get(
+                                    real_addr, f"?@0x{real_addr:04X}")
+                                names.append(f"{name}*")
+                            else:
+                                name = SLOT_GFX_NAMES.get(i, {}).get(
+                                    enc, f"?@0x{enc:04X}")
+                                names.append(name)
+                        return names
+                    rom_off = 0x64000 + (og_ptr - 0x4000)
+                    names = []
+                    for i in range(4):
+                        enc = rom_at(rom_off + 1 + i * 2) | (
+                              rom_at(rom_off + 2 + i * 2) << 8)
+                        name = SLOT_GFX_NAMES.get(i, {}).get(
+                            enc, f"?@0x{enc:04X}")
+                        names.append(name)
+                    return names
+
+                lines = []
+                lines.append("Enemizer room map — generated on demand")
+                lines.append("=" * 60)
+                lines.append("")
+                lines.append("Legend: each row shows a room's 4 VRAM slot enemies.")
+                lines.append("        * = cross-slotted (enemy's native slot != VRAM slot)")
+                lines.append("")
+                for ow in sorted(LEVEL_ROOM_WGIDS):
+                    display, rows = LEVEL_ROOM_WGIDS[ow]
+                    lines.append(f"=== {ow:2d}. {display} ===")
+                    per_wgid: "dict[int, list[int]]" = {}
+                    wgid_order = []
+                    for _lbl, wr, wgid in rows:
+                        if wgid not in per_wgid:
+                            per_wgid[wgid] = []
+                            wgid_order.append(wgid)
+                        if wr not in per_wgid[wgid]:
+                            per_wgid[wgid].append(wr)
+                    for wgid in wgid_order:
+                        slots = _decode_dispatch(wgid)
+                        slots_str = " / ".join(f"[{i}]{s}"
+                                               for i, s in enumerate(slots))
+                        wrooms = per_wgid[wgid]
+                        wrooms_str = ",".join(f"0x{w:02X}" for w in wrooms)
+                        lines.append(
+                            f"  wgid 0x{wgid:02X}  wRoom={wrooms_str:20s}  "
+                            f"{slots_str}")
+                    lines.append("")
+
+                path = _os.path.abspath("enemizer_room_map.txt")
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write("\n".join(lines) + "\n")
+                logger.info(f"[WL3] /enemizerlog wrote {path}")
+            except Exception as e:
+                logger.warning(f"[WL3] /enemizerlog failed: {e}")
+        import asyncio
+        asyncio.create_task(_do())
 
     async def _apply_testenemy(self, ctx: "BizHawkClientContext", label: str,
                                 w_obj_grp: int,

@@ -101,9 +101,9 @@ FORM_ICON_FLIPPED_EXTRACTIONS = (
     # motion trail is on the right (matches rolling right visually).
     ("sprite_raw", 0x025000, 2048, 112, 32, TREASURE_ROLL_TILE_OFFSET),
 )
-TREASURE_DUMMY_PAL_OFFSET        = 0x09BA77   # TreasureOBPals[$65] — 1 byte (palette index)
+TREASURE_DUMMY_PAL_OFFSET        = 0x09BBE8   # TreasureOBPals[$65] — 1 byte (palette index)
 TREASURE_GFX_BASE                = 0x098000   # TreasureGfx[0] — each entry 64 bytes
-TREASURE_PAL_BASE                = 0x09BA12   # TreasureOBPals[0] — each entry 1 byte
+TREASURE_PAL_BASE                = 0x09BB83   # TreasureOBPals[0] — each entry 1 byte
 KEY_COLOR_PALS = [0x08, 0x05, 0x06, 0x07]    # OBPAL: grey, red, green, blue
 OBPAL_TREASURE_PURPLE = 0x09                  # Combined unlock items
 
@@ -301,7 +301,7 @@ GOLF_PAR_HINT_FREQ_OFFSET        = 0x003A6E   # GolfParHintFrequencyOpt byte in 
 # Vanilla source is `$04`; the AP option lets the player pick 1-10 without
 # touching the ROM layout. Re-audit if hidden_figure.asm changes above line 15.
 RUDY_HIT_POINTS_OFFSET           = 0x04CC94
-TREASURE_OB_PALS_OFFSET          = 0x09BA12   # TreasureOBPals table (indexed by treasure ID)
+TREASURE_OB_PALS_OFFSET          = 0x09BB83   # TreasureOBPals table (indexed by treasure ID)
 
 # Combined-item companion chains: collecting key → also grant value (chained).
 # Tusk Set: $24→$25→$26 (two hops).
@@ -532,21 +532,9 @@ class WL3PatchExtension(APPatchExtension):
                 rng, palette_lookup, grouped=grouped):
             rom[off:off + len(data)] = data
 
-        # After all enemizer writes are applied, dump a per-level report
-        # of what enemies ended up in which rooms — helps players preview
-        # their seed and helps diagnose "why did that room look weird"
-        # feedback. Writes to enemizer_room_map.txt in cwd (usually the
-        # seed's output folder); errors go to a sibling .error.txt.
-        try:
-            WL3PatchExtension._write_enemizer_room_map(bytes(rom))
-        except Exception:
-            import os as _os, traceback as _tb
-            try:
-                with open(_os.path.abspath("enemizer_room_map.error.txt"),
-                          "w", encoding="utf-8") as f:
-                    f.write(_tb.format_exc())
-            except Exception:
-                pass
+        # (Enemizer room map dump moved out of patch — the client's
+        # /enemizerlog command generates it on demand from the running ROM
+        # so we don't spam a .txt beside every seed.)
         return bytes(rom)
 
     @staticmethod
