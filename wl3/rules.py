@@ -249,7 +249,7 @@ CHEST_RULES: dict = {
     "The West Crater": [
         _o(can_pound_cracked_blocks, _has("Yarn Form")),                             # grey
         _o(_c(has_overalls_2, _has("Garlic")), _has("Fat Form")),                    # red
-        _o(_c(can_pass_through_fire, can_jump_high),can_fly),                        # green
+        _o(_c(_has("Fire Drencher"), can_jump_high),can_fly),                        # green
         _has("Rust Spray"),                                                          # blue
     ],
     "The Grasslands": [
@@ -424,7 +424,7 @@ KEY_RULES: dict = {
     "The West Crater": [
         None,                                                                        # grey
         _c(_o(can_pound_cracked_blocks, _has("Yarn Form")), _o(has_grab_1, can_fly)),# red
-        _o(_c(can_pass_through_fire, can_jump_high), can_fly),                       # green
+        _o(_c(_has("Fire Drencher"), can_jump_high), can_fly),                       # green
         _c(_has("Rust Spray"), has_grab_1),                                          # blue
     ],
     "The Grasslands": [
@@ -645,8 +645,8 @@ COIN_RULES: dict = {
         _c(_has("Rust Spray"),_o(has_grab_1,can_fly)),                                  #3
         _has("Rust Spray"),                                                             #4
         can_pound_large_solid_blocks,                                                   #5
-        _o(_c(can_pass_through_fire, can_jump_high), can_fly),                          #6
-        _o(_c(can_pass_through_fire, _has("High Jump Boots")), can_fly),                #7
+        _o(_c(_has("Fire Drencher"), can_jump_high), can_fly),                          #6
+        _o(_c(_has("Fire Drencher"), _has("High Jump Boots")), can_fly),                #7
         _c(_o(can_pound_cracked_blocks, _has("Yarn Form")), _o(has_grab_1, can_fly)),   #8
     ],
     "The Grasslands": [
