@@ -1035,6 +1035,8 @@ def set_rules(world: "WL3World") -> None:
         chest_logic["Beneath the Waves"][blue] = _c(_o(has_flippers_1,_has("Flat Form")),_o(has_grab_1,_has("Fat Form")))
         
     if world.options.enemizer:
+        add_tf(key_logic["Out of the Woods"], blue, can_bounce)
+        add_tf(chest_logic["Out of the Woods"], blue, can_bounce)
         add_tf(coin_logic["Out of the Woods"], 1, _has("Fire Form"), can_pound_solid_blocks)
         add_tf(coin_logic["Out of the Woods"], 2, _has("Puffy Form"))
         add_tf(coin_logic["Out of the Woods"], 4, can_bounce)
@@ -1246,7 +1248,7 @@ def set_rules(world: "WL3World") -> None:
             add_tf(coin_logic["The Steep Canyon"], 7, _has("Fire Form"), _has("Roll Form"), _c(_has("Spiked Helmet"),_has("Flat Form")))
 
         if glitches < all_glitches:
-            key_logic["Out of the Woods"][green] = can_bounce
+            add_tf(key_logic["Out of the Woods"], green, can_bounce)
 
         if difficulty >= knowledge_checks and glitches < easy_glitches:
             add_tf(key_logic["The Vast Plain"], red, _has("Puffy Form"), _has("Roll Form"))
