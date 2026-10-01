@@ -294,7 +294,7 @@ CHEST_RULES: dict = {
                                           _has("Roll Form"))), can_bounce),          # red
         _c(_has("Scissors"), can_jump_high),                                         # green
         _c(_has("Scissors"), _has("Full Moon Gong"), can_jump_high,
-           _o(_c(_has("High Jump Boots"), has_overalls_2, has_grab_1)), _has("Roll Form")),# blue
+           _o(_c(_has("High Jump Boots"), has_overalls_2, has_grab_1), _has("Roll Form"))),# blue
     ],
     "The Stagnant Swamp": [
         None,                                                                        # grey
