@@ -577,6 +577,21 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
+    "N2 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 8,
+        classification=ItemClassification.useful,  # big room is also reachable via I
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "N3 - Door H Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 9,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "N3 - Door J Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 10,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
 }
 
 # Door keys are granted offline through the same Trap*Table side tables as
@@ -586,6 +601,7 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
 # ROOM_KEY_BASE_ITEM_ID must equal the ROM's DOOR_* index
 # (treasure_constants.asm); the AP client uses the same mapping.
 DOOR_KEY_CODE_BASE = 0x20  # DOOR_KEY_CODE_BASE, treasure_constants.asm
+MAX_LOCKED_DOORS = 136     # MAX_LOCKED_DOORS, treasure_constants.asm (SignItems size)
 
 # AP item id → Trap*Table side-table code (TRAP_* or door key).
 SIDE_TABLE_CODES: Dict[int, int] = {

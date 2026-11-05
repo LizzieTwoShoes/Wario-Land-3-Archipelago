@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Dict
 
 from BaseClasses import Location, Region
 
-from .locations import BOSS_DEFEAT_LOCATION_TABLE, COIN_BLOCK_LOCATION_TABLE, COIN_LOCATION_TABLE, KEY_LOCATION_TABLE, LOCATION_TABLE, SHOP_LOCATION_TABLE
+from .locations import BOSS_DEFEAT_LOCATION_TABLE, COIN_BLOCK_LOCATION_TABLE, COIN_LOCATION_TABLE, DOOR_SIGN_LOCATION_TABLE, KEY_LOCATION_TABLE, LOCATION_TABLE, SHOP_LOCATION_TABLE
 
 if TYPE_CHECKING:
     from . import WL3World
@@ -91,6 +91,13 @@ def create_regions(world: "WL3World") -> Dict[str, Region]:
             region = all_regions[loc_data.region]
             loc = Location(player, loc_name, loc_data.ap_id, region)
             region.locations.append(loc)
+
+    # Door signposts — one per locked door with a signpost (see
+    # DOOR_SIGN_LOCATION_TABLE). Locked doors are always on for now.
+    for loc_name, loc_data in DOOR_SIGN_LOCATION_TABLE.items():
+        region = all_regions[loc_data.region]
+        loc = Location(player, loc_name, loc_data.ap_id, region)
+        region.locations.append(loc)
 
     # All regions unconditionally reachable — level entry gated by item rules
     menu.connect(north)

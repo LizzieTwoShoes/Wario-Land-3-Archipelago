@@ -17,6 +17,7 @@ from worlds.LauncherComponents import Component, SuffixIdentifier, Type, compone
 
 from .items import (
     BASE_ITEM_ID,
+    MAX_LOCKED_DOORS,
     COMBINED_ITEMS,
     COMBINED_ITEMS_OVERWORLD,
     COMBINED_ITEMS_IN_LEVEL,
@@ -43,7 +44,7 @@ from .items import (
     TREASURE_TABLE,
     WL3ItemData,
 )
-from .locations import BASE_LOC_ID, BOSS_DEFEAT_LOCATION_TABLE, COIN_BLOCK_LOCATION_TABLE, COIN_LOCATION_TABLE, KEY_LOCATION_TABLE, LOCATION_TABLE, SHOP_LOCATION_TABLE, WL3LocationData
+from .locations import BASE_LOC_ID, BOSS_DEFEAT_LOCATION_TABLE, COIN_BLOCK_LOCATION_TABLE, COIN_LOCATION_TABLE, DOOR_SIGN_LOCATION_TABLE, KEY_LOCATION_TABLE, LOCATION_TABLE, SHOP_LOCATION_TABLE, WL3LocationData
 from Options import OptionGroup
 from .options import (WL3Options, KeyShuffle, CombinedItems, BossDefeats,
                       GolfPrice, GolfBuilding, IHateGolf,
@@ -254,6 +255,8 @@ class WL3World(World):
         # 44 coin-block locations, added to the multiworld only when the
         # coin_blocksanity option is enabled (see create_regions).
         **{name: data.ap_id for name, data in COIN_BLOCK_LOCATION_TABLE.items()},
+        # Door signposts (see DOOR_SIGN_LOCATION_TABLE).
+        **{name: data.ap_id for name, data in DOOR_SIGN_LOCATION_TABLE.items()},
     }
 
     item_name_groups = {
@@ -486,6 +489,10 @@ class WL3World(World):
         if self.options.coin_blocksanity:
             for _ in range(44):
                 items.append(self.create_item(self.random.choice(filler_items)))
+
+        # Door signposts: one location per signposted door, one filler each.
+        for _ in range(len(DOOR_SIGN_LOCATION_TABLE)):
+            items.append(self.create_item(self.random.choice(filler_items)))
 
         # Trap replacement: swap a % of filler items for random trap items.
         # Runs after key shuffle so keyring-padding fillers are also candidates.
@@ -1006,8 +1013,6 @@ class WL3World(World):
         portrait system once that lands; not yet read by the ROM.
         """
         from .locations import COIN_BLOCK_LOCATION_TABLE
-        from .items import COMBINED_ITEMS, KEY_ITEM_TABLE, KEYRING_ITEM_TABLE
-        OBPAL_TREASURE_YELLOW = 4
 
         block_items = bytearray([0xFF] * 200)
         block_pals  = bytearray([0xFF] * 200)
@@ -1017,55 +1022,117 @@ class WL3World(World):
 
         for loc_name, loc_data in COIN_BLOCK_LOCATION_TABLE.items():
             idx = loc_data.loc_index
-            location = self.multiworld.get_location(loc_name, self.player)
-            item = location.item
-            if item is None or item.player != self.player:
-                # Foreign / empty — show generic gem so the player still sees a
-                # portrait indicating "you're sending this to someone."
-                if item is not None:
-                    cls = item.classification
-                    if cls in (ItemClassification.progression,
-                               ItemClassification.progression_skip_balancing):
-                        block_items[idx] = 0x4E  # Red Gem
-                    elif cls == ItemClassification.useful:
-                        block_items[idx] = 0x50  # Blue Gem
-                    else:
-                        block_items[idx] = 0x4F  # Green Gem
-                continue
-
-            # Own item — pick a display treasure ID (and the grant ID GrantColourCoinBlockItem reads).
-            if item.name in KEY_ITEM_TABLE:
-                key_data = KEY_ITEM_TABLE[item.name]
-                block_items[idx] = 0x80 | ((key_data.owlevel - 1) * 4 + key_data.color_index)
-                block_pals[idx] = KEY_COLOR_PALS[key_data.color_index]
-            elif item.name in KEYRING_ITEM_TABLE:
-                # Keyring → 4-keys icon. No offline local grant yet at coin-
-                # block locations (see GrantColourCoinBlockItem) — the AP
-                # client still delivers it once online.
-                block_items[idx] = 0x66
-                block_pals[idx] = OBPAL_TREASURE_YELLOW
-            elif item.name in TRANSFORM_UNLOCK_ITEMS:
-                block_items[idx] = FORM_DISPLAY_TREASURE[item.name]
-            elif item.name in COMBINED_ITEMS:
-                item_data = ITEM_TABLE.get(item.name)
-                block_items[idx] = item_data.tier_ids[0] if item_data else 0x4F
-                block_pals[idx]  = OBPAL_TREASURE_PURPLE
-            else:
-                item_data = ITEM_TABLE.get(item.name)
-                if item_data is None:
-                    block_items[idx] = 0x4F
-                elif item_data.ap_id in TRAP_AP_IDS_SET:
-                    # Trap → random treasure-ID disguise (same as chests/keys/
-                    # coins). TrapColourCoinBlockTable (separate table) is
-                    # what actually queues the trap on pickup.
-                    block_items[idx] = self.random.choice(TRAP_DISGUISE_POOL)
-                else:
-                    block_items[idx] = item_data.tier_ids[0]
-                    from .rom import COIN_BUNDLE_PALS
-                    if item.name in COIN_BUNDLE_PALS:
-                        block_pals[idx] = COIN_BUNDLE_PALS[item.name]
+            item = self.multiworld.get_location(loc_name, self.player).item
+            block_items[idx], block_pals[idx] = self._side_item_display(item)
 
         return list(block_items), list(block_pals)
+
+    def _side_item_display(self, item) -> "tuple[int, int]":
+        """(item id, OBPAL override) for a coin-block or door-sign slot, in
+        the LevelCoinItems encoding GrantCoinLikeItem reads ($FF = nothing,
+        bit 7 = key item, $66 = keyring, else treasure id). Foreign items
+        show a gem by classification so the player still sees that
+        something is being sent; traps get a random treasure disguise (the
+        side table is what actually queues them)."""
+        from .items import COMBINED_ITEMS, KEY_ITEM_TABLE, KEYRING_ITEM_TABLE
+        OBPAL_TREASURE_YELLOW = 4
+        if item is None:
+            return 0xFF, 0xFF
+        if item.player != self.player:
+            cls = item.classification
+            if cls in (ItemClassification.progression,
+                       ItemClassification.progression_skip_balancing):
+                return 0x4E, 0xFF  # Red Gem
+            if cls == ItemClassification.useful:
+                return 0x50, 0xFF  # Blue Gem
+            return 0x4F, 0xFF      # Green Gem
+        if item.name in KEY_ITEM_TABLE:
+            key_data = KEY_ITEM_TABLE[item.name]
+            return (0x80 | ((key_data.owlevel - 1) * 4 + key_data.color_index),
+                    KEY_COLOR_PALS[key_data.color_index])
+        if item.name in KEYRING_ITEM_TABLE:
+            # Keyring → 4-keys icon. No offline local grant yet at these
+            # slots (GrantCoinLikeItem gets no keyring target) — the AP
+            # client still delivers it once online.
+            return 0x66, OBPAL_TREASURE_YELLOW
+        if item.name in TRANSFORM_UNLOCK_ITEMS:
+            return FORM_DISPLAY_TREASURE[item.name], 0xFF
+        item_data = ITEM_TABLE.get(item.name)
+        if item.name in COMBINED_ITEMS:
+            return (item_data.tier_ids[0] if item_data else 0x4F), OBPAL_TREASURE_PURPLE
+        if item_data is None:
+            return 0x4F, 0xFF
+        if item_data.ap_id in TRAP_AP_IDS_SET:
+            return self.random.choice(TRAP_DISGUISE_POOL), 0xFF
+        from .rom import COIN_BUNDLE_PALS
+        return item_data.tier_ids[0], COIN_BUNDLE_PALS.get(item.name, 0xFF)
+
+    def _build_sign_messages(self) -> bytes:
+        """SignMessages: per door index, SIGN_MSG_LINES lines of
+        SIGN_MSG_COLS SignFont glyphs — "I'VE LEFT YOUR <item> FOR YOU." (or
+        "<player>'S <item>") word-wrapped, then "-OLD MAN" right-aligned."""
+        lines_per, cols = 4, 18
+        space = 0x24
+        glyphs = {ch: i for i, ch in enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")}
+        glyphs.update({" ": 0x24, "-": 0x25, "&": 0x26, "'": 0x27, ".": 0x28,
+                       ",": 0x29, "!": 0x2A, "?": 0x2B})
+
+        def wrap(text: str, width: int, max_lines: int) -> "List[str]":
+            lines, line = [], ""
+            for word in text.split():
+                while len(word) > width:  # hard-split words longer than a line
+                    if line:
+                        lines.append(line)
+                        line = ""
+                    lines.append(word[:width])
+                    word = word[width:]
+                if not line:
+                    line = word
+                elif len(line) + 1 + len(word) <= width:
+                    line += " " + word
+                else:
+                    lines.append(line)
+                    line = word
+            if line:
+                lines.append(line)
+            if len(lines) > max_lines:
+                lines = lines[:max_lines]
+                lines[-1] = lines[-1][:width - 3].rstrip() + "..."
+            return lines
+
+        data = bytearray([space] * (MAX_LOCKED_DOORS * lines_per * cols))
+        for loc_name, loc_data in DOOR_SIGN_LOCATION_TABLE.items():
+            item = self.multiworld.get_location(loc_name, self.player).item
+            if item is None:
+                continue
+            if item.player == self.player:
+                owner = "YOUR"
+            else:
+                owner = f"{self.multiworld.player_name[item.player]}'S"
+            text = wrap(f"I'VE LEFT {owner} {item.name} FOR YOU.".upper(), cols, lines_per - 1)
+            text += [""] * (lines_per - 1 - len(text))
+            text.append("-OLD MAN".rjust(cols - 1))
+            base = loc_data.door_index * lines_per * cols
+            for row, line in enumerate(text):
+                for col, ch in enumerate(line[:cols]):
+                    data[base + row * cols + col] = glyphs.get(ch, space)
+        return bytes(data)
+
+    def _build_sign_assignments(self) -> "tuple[List[int], List[int]]":
+        """Return (SignItems, TrapSignTable), MAX_LOCKED_DOORS bytes each,
+        indexed by door index. GrantSignItem reads them when a door's
+        signpost is read (BlockFunc_ReadSign)."""
+        from .items import SIDE_TABLE_CODES
+        sign_items = [0xFF] * MAX_LOCKED_DOORS
+        trap_table = [0] * MAX_LOCKED_DOORS
+        for loc_name, loc_data in DOOR_SIGN_LOCATION_TABLE.items():
+            item = self.multiworld.get_location(loc_name, self.player).item
+            sign_items[loc_data.door_index] = self._side_item_display(item)[0]
+            if item is not None and item.player == self.player:
+                item_data = ITEM_TABLE.get(item.name)
+                if item_data is not None:
+                    trap_table[loc_data.door_index] = SIDE_TABLE_CODES.get(item_data.ap_id, 0)
+        return sign_items, trap_table
 
     def _build_trap_coin_block_table(self) -> List[int]:
         """Like _build_trap_coin_table but for coin-block locations (coin
@@ -1195,6 +1262,7 @@ class WL3World(World):
             all_locs = {**all_locs, **SHOP_LOCATION_TABLE}
         if self.options.coin_blocksanity:
             all_locs = {**all_locs, **COIN_BLOCK_LOCATION_TABLE}
+        all_locs = {**all_locs, **DOOR_SIGN_LOCATION_TABLE}
         for loc_name, loc_data in all_locs.items():
             loc = self.multiworld.get_location(loc_name, self.player)
             if loc.item is not None:
@@ -1232,6 +1300,7 @@ class WL3World(World):
             "in_game_messages":        int(self.options.in_game_messages),
             "boss_defeats":            bool(self.options.boss_defeats),
             "coin_blocksanity":        bool(self.options.coin_blocksanity),
+            "door_signs":              True,  # client watches wDoorSignFlags
             "shopsanity":              bool(self.options.shopsanity),
             "shop_price_tier":         int(self.options.shop_price_tier),
             "shop_prices":             list(self.shop_prices),

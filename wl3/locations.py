@@ -301,3 +301,45 @@ def _build_coin_block_location_table() -> Dict[str, WL3CoinBlockLocationData]:
 COIN_BLOCK_LOCATION_TABLE: Dict[str, WL3CoinBlockLocationData] = _build_coin_block_location_table()
 assert len(COIN_BLOCK_LOCATION_TABLE) == 44, \
     f"Expected 44 coin block locations, got {len(COIN_BLOCK_LOCATION_TABLE)}"
+
+
+# ---------------------------------------------------------------------------
+# Door signposts — one check per locked door that has a signpost beside it
+# (read_sign rows in DoorSigns, block_functions.asm). Reading it (Up at the
+# sign) sets the door's bit in wDoorSignFlags. AP id = DOOR_SIGN_BASE_LOC_ID
+# + door index (the ROM's DOOR_* constant), which is also the sign's slot in
+# SignItems / TrapSignTable and its wDoorSignFlags bit.
+# ---------------------------------------------------------------------------
+DOOR_SIGN_BASE_LOC_ID = 7_771_100
+
+
+class WL3DoorSignLocationData(NamedTuple):
+    ap_id: int
+    door_index: int     # DOOR_* constant (treasure_constants.asm)
+    region: str
+    level_name: str
+
+
+# (door index, owlevel, door letter) — must match the ROM's read_sign rows.
+_DOOR_SIGNS = [
+    (0, 1, "A"),  # DOOR_N1_A
+    (2, 1, "B"),  # DOOR_N1_B
+    (3, 1, "C"),  # DOOR_N1_C
+]
+
+
+def _build_door_sign_location_table() -> Dict[str, WL3DoorSignLocationData]:
+    level_info = {owlevel: (name, region) for owlevel, name, region in LEVEL_LIST}
+    table: Dict[str, WL3DoorSignLocationData] = {}
+    for door_index, owlevel, letter in _DOOR_SIGNS:
+        level_name, region = level_info[owlevel]
+        table[f"{level_name} - Door {letter} Sign"] = WL3DoorSignLocationData(
+            ap_id=DOOR_SIGN_BASE_LOC_ID + door_index,
+            door_index=door_index,
+            region=region,
+            level_name=level_name,
+        )
+    return table
+
+
+DOOR_SIGN_LOCATION_TABLE: Dict[str, WL3DoorSignLocationData] = _build_door_sign_location_table()

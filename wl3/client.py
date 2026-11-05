@@ -161,6 +161,10 @@ ADDR_COLOUR_COIN_BLOCK_FLAGS_WRAM = 0x14E3  # wColourCoinBlockFlags (bank 1
                                        # 0xD4E3) — 25 bytes, 1 bit per
                                        # "always colour coin" block per
                                        # level (up to 8).
+ADDR_DOOR_SIGN_FLAGS_WRAM = 0x1772    # wDoorSignFlags (bank 1, right after
+                                       # wDoorUsedFlags) — 17 bytes, bit N set
+                                       # when door N's signpost was read
+                                       # (BlockFunc_ReadSign).
 ADDR_DOOR_KEY_FLAGS_WRAM = 0x1750     # wDoorKeyFlags (bank 1 0xD750, pinned
                                        # "Door State" section) — 17 bytes, one
                                        # bit per locked door; bit N = door
@@ -223,6 +227,8 @@ SHOP_BASE_LOC_ID = 7_770_800        # AP loc ID = SHOP_BASE_LOC_ID + shop_slot_i
 NUM_SHOP_SLOTS = 10                 # matches ROM wShopSlotsBought bit count
 COIN_BLOCK_BASE_LOC_ID = 7_770_900  # AP loc ID = COIN_BLOCK_BASE_LOC_ID + (owlevel-1)*8 + block_idx
 COIN_BLOCK_SLOTS_PER_LEVEL = 8       # matches ROM wColourCoinBlockFlags bit count per level
+DOOR_SIGN_BASE_LOC_ID = 7_771_100   # AP loc ID = DOOR_SIGN_BASE_LOC_ID + door index
+DOOR_FLAG_BYTES = 17                # 136 doors, one bit each (ROM DOOR_FLAG_BYTES)
 KEY_BASE_ITEM_ID = BASE_ITEM_ID + 300  # 7_770_300
 KEYRING_BASE_ITEM_ID = BASE_ITEM_ID + 700  # 7_770_700 (one per level, owlevel-1 offset)
 ROOM_KEY_BASE_ITEM_ID = BASE_ITEM_ID + 600  # Room-key items (proof of concept)
@@ -310,6 +316,7 @@ class WL3Client(BizHawkClient):
         self._prev_coin_flags:  bytes = bytes(25)
         self._prev_boss_defeated_flags: bytes = bytes(2)
         self._prev_colour_coin_block_flags: bytes = bytes(25)
+        self._prev_door_sign_flags: bytes = bytes(DOOR_FLAG_BYTES)
         self._prev_opened_chests: bytes = bytes(13)
         self._prev_shop_slots_bought: bytes = bytes(2)
         self._prev_shop_mode: int = 0        # last-seen wShopMode
@@ -807,6 +814,44 @@ class WL3Client(BizHawkClient):
             except RequestFailedError:
                 pass
 
+        # ---- Detect door signposts read: new bits set in wDoorSignFlags ----
+        # One bit per door index (BlockFunc_ReadSign). Gated on
+        # slot_data["door_signs"] so older seeds don't send unknown checks.
+        # Own-world items are granted right away, as for coin blocks.
+        if bool((ctx.slot_data or {}).get("door_signs", False)):
+            try:
+                ds_raw = (await read(ctx.bizhawk_ctx,
+                    [(ADDR_DOOR_SIGN_FLAGS_WRAM, DOOR_FLAG_BYTES, "WRAM")]))[0]
+                for byte_idx in range(DOOR_FLAG_BYTES):
+                    new_bits = (~self._prev_door_sign_flags[byte_idx]) & ds_raw[byte_idx]
+                    for bit in range(8):
+                        if not new_bits & (1 << bit):
+                            continue
+                        loc_id = DOOR_SIGN_BASE_LOC_ID + byte_idx * 8 + bit
+                        if loc_id in self._checked_locs:
+                            continue
+                        self._checked_locs.add(loc_id)
+                        self._recent_check_times[loc_id] = time.time()
+                        logger.debug(f"[WL3] Door sign read — door {byte_idx * 8 + bit} -> AP loc {loc_id}")
+                        info = self._loc_items.get(loc_id) if self._loc_items else None
+                        if info and info.get("player") == ctx.slot:
+                            ap_id = info.get("ap_id")
+                            if ap_id is not None:
+                                try:
+                                    await self._grant_item(ctx, ap_id, silent=False)
+                                    self._cached_received.add(ap_id)
+                                except Exception:
+                                    logger.exception(
+                                        f"[WL3] Offline door-sign grant failed "
+                                        f"loc={loc_id} ap_id={ap_id}")
+                        # No in-game msg: the sign's own message box already
+                        # told the player. Recording the loc also keeps the
+                        # server's echo of the item from showing one.
+                        self._shown_sent_locs.add(loc_id)
+                self._prev_door_sign_flags = bytes(ds_raw)
+            except RequestFailedError:
+                pass
+
         # ---- Detect boss defeats: new bits set in wBossDefeatedFlags ----
         # 2 bytes, 10 bits total (one per boss). ROM SetBossDefeatedBit is
         # called from each boss's defeat handler; idempotent per bit. The
@@ -1041,6 +1086,13 @@ class WL3Client(BizHawkClient):
                                 self._checked_locs.add(
                                     COIN_BLOCK_BASE_LOC_ID + byte_idx * COIN_BLOCK_SLOTS_PER_LEVEL + bit)
                     self._prev_colour_coin_block_flags = bytes(ccb_raw)
+                if bool((ctx.slot_data or {}).get("door_signs", False)):
+                    ds_raw = (await read(ctx.bizhawk_ctx,
+                        [(ADDR_DOOR_SIGN_FLAGS_WRAM, DOOR_FLAG_BYTES, "WRAM")]))[0]
+                    for door_idx in range(DOOR_FLAG_BYTES * 8):
+                        if ds_raw[door_idx >> 3] & (1 << (door_idx & 7)):
+                            self._checked_locs.add(DOOR_SIGN_BASE_LOC_ID + door_idx)
+                    self._prev_door_sign_flags = bytes(ds_raw)
                 self._seeded_from_wram = True
                 logger.debug(f"[WL3] Seeded {len(self._checked_locs)} offline checks from wOpenedChests + wCoinFlags")
                 self._levels_shown = False  # trigger auto-print after items are processed

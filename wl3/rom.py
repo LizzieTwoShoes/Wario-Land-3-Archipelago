@@ -42,11 +42,14 @@ LEVEL_COIN_ITEMS_OFFSET          = 0x05836C   # LevelCoinItems       (200 bytes;
 COIN_PAL_OVERRIDE_OFFSET         = 0x058434   # CoinPaletteOverrides (200 bytes; bank $16 — OBPAL per coin, $FF=default)
 TRAP_COIN_TABLE_OFFSET           = 0x0584FC   # TrapCoinTable        (200 bytes; bank $16 — 0=no trap, 1-5=TRAP_* — offline trap dispatch from coins)
 COIN_KEYRING_TARGETS_OFFSET      = 0x0585C4   # CoinKeyringTargets   (200 bytes; bank $16 — $FF=not keyring, 1-25=target owlevel)
-LEVEL_COLOUR_COIN_BLOCK_ITEMS_OFFSET        = 0x02B904  # LevelColourCoinBlockItems       (200 bytes; bank $09 — same encoding as LevelCoinItems, separate 200-entry space for coin blocksanity)
-COLOUR_COIN_BLOCK_PAL_OVERRIDE_OFFSET       = 0x02B9CC  # ColourCoinBlockPaletteOverrides (200 bytes; bank $09 — OBPAL per block, $FF=default; not consumed by ROM yet — portrait system not wired)
-TRAP_COLOUR_COIN_BLOCK_TABLE_OFFSET         = 0x02BA94  # TrapColourCoinBlockTable        (200 bytes; bank $09 — 0=no trap, 1-5=TRAP_* — offline trap dispatch from coin blocks)
-COLOUR_COIN_BLOCK_KEYRING_TARGETS_OFFSET    = 0x02BB5C  # ColourCoinBlockKeyringTargets   (200 bytes; bank $09 — reserved; not read by ROM yet, see GrantColourCoinBlockItem)
+LEVEL_COLOUR_COIN_BLOCK_ITEMS_OFFSET        = 0x02B904  # LevelColourCoinBlockItems       (200 bytes; same encoding as LevelCoinItems, separate 200-entry space for coin blocksanity)
+COLOUR_COIN_BLOCK_PAL_OVERRIDE_OFFSET       = 0x02B9CC  # ColourCoinBlockPaletteOverrides (200 bytes; OBPAL per block, $FF=default; not consumed by ROM yet — portrait system not wired)
+TRAP_COLOUR_COIN_BLOCK_TABLE_OFFSET         = 0x02BA94  # TrapColourCoinBlockTable        (200 bytes; 0=no trap, 1-5=TRAP_* — offline trap dispatch from coin blocks)
+COLOUR_COIN_BLOCK_KEYRING_TARGETS_OFFSET    = 0x02BB5C  # ColourCoinBlockKeyringTargets   (200 bytes; reserved; not read by ROM yet, see GrantColourCoinBlockItem)
 LEVEL_BOSS_ITEMS_OFFSET          = 0x05868C   # LevelBossItems       (10 bytes;  bank $16 — same encoding as LevelCoinItems)
+SIGN_ITEMS_OFFSET                = 0x05874B   # SignItems            (136 bytes; bank $16 — door signpost item per door index, LevelCoinItems encoding)
+SIGN_MESSAGES_OFFSET             = 0x00D917   # SignMessages         (136 * 72 bytes; SignFont glyphs per door signpost)
+TRAP_SIGN_TABLE_OFFSET           = 0x0587D3   # TrapSignTable        (136 bytes; bank $16 — 0, TRAP_* or DOOR_KEY_CODE_BASE + door index)
 TRAP_BOSS_TABLE_OFFSET           = 0x058696   # TrapBossTable        (10 bytes;  bank $16 — 0=no trap, 1-5=TRAP_*)
 BOSS_KEYRING_TARGETS_OFFSET      = 0x0586A0   # BossKeyringTargets   (10 bytes;  bank $16 — $FF=not keyring, 1-25=target owlevel)
 TREASURE_DUMMY_TILE_OFFSET       = 0x099940   # TreasureGfx[$65] — 64 bytes (4 tiles, 2bpp)
@@ -288,7 +291,7 @@ SHOPSANITY_MODE_OFFSET           = 0x080F9D   # ShopsanityModeOpt byte in Bank 2
 SHOP_SLOT_ITEMS_OFFSET           = 0x080F9E   # ShopSlotItems table in Bank 20 (10 bytes = treasure ID per shop slot)
 SHOP_SLOT_NAMES_OFFSET           = 0x080FA8   # ShopSlotNamesTable in Bank 20 (10 slots × 20 bytes = 200 bytes, msg-font encoded)
 SHOP_SLOT_KEY_COLORS_OFFSET      = 0x081072   # ShopSlotKeyColors table in Bank 20 (10 bytes, $FF = not a key, 0-3 = grey/red/green/blue)
-HIDDEN_PASSAGES_REVEALED_OFFSET = 0x01FE00  # HiddenPassagesRevealedOpt byte in Bank 07 (moved from Bank 3 during reveal-hidden-blocks refactor)
+HIDDEN_PASSAGES_REVEALED_OFFSET = 0x01FE00  # HiddenPassagesRevealedOpt byte (floating ROMX section — re-check after linker shifts)
 GOLF_PRICE_OPT_OFFSET            = 0x003A00   # GolfPriceOpt byte in Home bank
 GOLF_BUILDING_OPT_OFFSET         = 0x003A01   # GolfBuildingOpt byte in Home bank
 DISABLE_PAL_CYCLE_OFFSET         = 0x003A02   # DisablePalCycleOpt byte in Home bank
@@ -954,6 +957,12 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
     # LevelColourCoinBlockItems keeps a gem/disguise placeholder.
     trap_coin_block_table = list(world._build_trap_coin_block_table())
     patch.write_token(APTokenTypes.WRITE, TRAP_COLOUR_COIN_BLOCK_TABLE_OFFSET, bytes(trap_coin_block_table))
+
+    # Door signpost tables (GrantSignItem, bank $16), indexed by door index.
+    sign_items, trap_sign_table = world._build_sign_assignments()
+    patch.write_token(APTokenTypes.WRITE, SIGN_ITEMS_OFFSET, bytes(sign_items))
+    patch.write_token(APTokenTypes.WRITE, TRAP_SIGN_TABLE_OFFSET, bytes(trap_sign_table))
+    patch.write_token(APTokenTypes.WRITE, SIGN_MESSAGES_OFFSET, world._build_sign_messages())
 
     # Boss-defeat item tables (offline grant). Only populated when the
     # boss_defeats option is on; otherwise all three tables ship as

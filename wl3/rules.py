@@ -828,6 +828,9 @@ DOOR_RULES: dict = {
     "The Peaceful Village - Red Chest":       _has("N2 - Door D Key"),
     "The Peaceful Village - Green Key":       _has("N2 - Door J Key"),
     "The Peaceful Village - Big Coin 4":      _has("N2 - Door J Key"),
+    # N3 The Vast Plain
+    "The Vast Plain - Green Chest":           _has("N3 - Door H Key"),
+    "The Vast Plain - Blue Chest":            _has("N3 - Door J Key"),
 }
 
 # ---------------------------------------------------------------------------
@@ -1388,6 +1391,14 @@ def set_rules(world: "WL3World") -> None:
             if level_rule is not None:
                 mw.get_location(loc_name, player).access_rule = \
                     lambda state, r=level_rule: r(state, player)
+
+    # Door signposts stand outside their door: reachable with the level.
+    from .locations import DOOR_SIGN_LOCATION_TABLE
+    for loc_name, loc_data in DOOR_SIGN_LOCATION_TABLE.items():
+        level_rule = level_rules.get(loc_data.level_name)
+        if level_rule is not None:
+            mw.get_location(loc_name, player).access_rule = \
+                lambda state, r=level_rule: r(state, player)
 
     # Boss defeats — reuse each boss's existing chest access rule. Boss chest
     # locations always live in LOCATION_TABLE (they're regular chest slots
