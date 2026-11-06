@@ -844,6 +844,12 @@ class WL3Client(BizHawkClient):
                                     logger.exception(
                                         f"[WL3] Offline door-sign grant failed "
                                         f"loc={loc_id} ap_id={ap_id}")
+                                # The icon above Wario still shows, once the
+                                # message box closes (the level is frozen
+                                # until then, popup timer included).
+                                popup_tid = self._resolve_popup_tid(ap_id)
+                                if popup_tid >= 0:
+                                    self._enqueue_item_popup(popup_tid)
                         # No in-game msg: the sign's own message box already
                         # told the player. Recording the loc also keeps the
                         # server's echo of the item from showing one.

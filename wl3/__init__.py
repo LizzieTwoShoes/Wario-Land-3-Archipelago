@@ -1070,34 +1070,38 @@ class WL3World(World):
     def _build_sign_messages(self) -> bytes:
         """SignMessages: per door index, SIGN_MSG_LINES lines of
         SIGN_MSG_COLS SignFont glyphs — "I'VE LEFT YOUR <item> FOR YOU." (or
-        "<player>'S <item>") word-wrapped, then "-OLD MAN" right-aligned."""
-        lines_per, cols = 4, 18
+        "<player>'S <item>") word-wrapped. The box shows 3 at a time and
+        scrolls with A; it adds "-OLD MAN" itself (door_art.asm)."""
+        lines_per, cols = 6, 16
         space = 0x24
         glyphs = {ch: i for i, ch in enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")}
         glyphs.update({" ": 0x24, "-": 0x25, "&": 0x26, "'": 0x27, ".": 0x28,
                        ",": 0x29, "!": 0x2A, "?": 0x2B})
 
-        def wrap(text: str, width: int, max_lines: int) -> "List[str]":
+        def wrap(text: str, widths: "List[int]") -> "List[str]":
+            def width() -> int:  # of the line being filled (extras get cut below)
+                return widths[min(len(lines), len(widths) - 1)]
+
             lines, line = [], ""
             for word in text.split():
-                while len(word) > width:  # hard-split words longer than a line
+                while len(word) > width():  # hard-split words longer than a line
                     if line:
                         lines.append(line)
                         line = ""
-                    lines.append(word[:width])
-                    word = word[width:]
+                    lines.append(word[:width()])
+                    word = word[len(lines[-1]):]
                 if not line:
                     line = word
-                elif len(line) + 1 + len(word) <= width:
+                elif len(line) + 1 + len(word) <= width():
                     line += " " + word
                 else:
                     lines.append(line)
                     line = word
             if line:
                 lines.append(line)
-            if len(lines) > max_lines:
-                lines = lines[:max_lines]
-                lines[-1] = lines[-1][:width - 3].rstrip() + "..."
+            if len(lines) > len(widths):
+                lines = lines[:len(widths)]
+                lines[-1] = lines[-1][:widths[-1] - 3].rstrip() + "..."
             return lines
 
         data = bytearray([space] * (MAX_LOCKED_DOORS * lines_per * cols))
@@ -1109,9 +1113,7 @@ class WL3World(World):
                 owner = "YOUR"
             else:
                 owner = f"{self.multiworld.player_name[item.player]}'S"
-            text = wrap(f"I'VE LEFT {owner} {item.name} FOR YOU.".upper(), cols, lines_per - 1)
-            text += [""] * (lines_per - 1 - len(text))
-            text.append("-OLD MAN".rjust(cols - 1))
+            text = wrap(f"I'VE LEFT {owner} {item.name} FOR YOU.".upper(), [cols] * lines_per)
             base = loc_data.door_index * lines_per * cols
             for row, line in enumerate(text):
                 for col, ch in enumerate(line[:cols]):

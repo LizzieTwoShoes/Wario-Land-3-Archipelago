@@ -48,7 +48,7 @@ TRAP_COLOUR_COIN_BLOCK_TABLE_OFFSET         = 0x02BA94  # TrapColourCoinBlockTab
 COLOUR_COIN_BLOCK_KEYRING_TARGETS_OFFSET    = 0x02BB5C  # ColourCoinBlockKeyringTargets   (200 bytes; reserved; not read by ROM yet, see GrantColourCoinBlockItem)
 LEVEL_BOSS_ITEMS_OFFSET          = 0x05868C   # LevelBossItems       (10 bytes;  bank $16 — same encoding as LevelCoinItems)
 SIGN_ITEMS_OFFSET                = 0x05874B   # SignItems            (136 bytes; bank $16 — door signpost item per door index, LevelCoinItems encoding)
-SIGN_MESSAGES_OFFSET             = 0x00D917   # SignMessages         (136 * 72 bytes; SignFont glyphs per door signpost)
+SIGN_MESSAGES_OFFSET             = 0x13C800   # SignMessages         (136 * 96 bytes; SignFont glyphs per door signpost)
 TRAP_SIGN_TABLE_OFFSET           = 0x0587D3   # TrapSignTable        (136 bytes; bank $16 — 0, TRAP_* or DOOR_KEY_CODE_BASE + door index)
 TRAP_BOSS_TABLE_OFFSET           = 0x058696   # TrapBossTable        (10 bytes;  bank $16 — 0=no trap, 1-5=TRAP_*)
 BOSS_KEYRING_TARGETS_OFFSET      = 0x0586A0   # BossKeyringTargets   (10 bytes;  bank $16 — $FF=not keyring, 1-25=target owlevel)
