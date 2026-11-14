@@ -1254,6 +1254,20 @@ class WL3World(World):
     # Slot data
     # ------------------------------------------------------------------
 
+    # Options set_rules / create_regions read: the debug tools' Logic page
+    # rebuilds this seed's rules from them (slot_data "logic", and logic.json
+    # in the patch for the offline tool).
+    LOGIC_OPTION_NAMES = ("combined_items", "difficulty", "minor_glitches", "enemizer", "key_shuffle",
+                          "bigcoinsanity", "coin_blocksanity", "boss_defeats", "shopsanity",
+                          "victory_condition", "bosses_required", "music_boxes_required")
+
+    def logic_settings(self) -> Dict[str, Any]:
+        return {
+            "options": {name: int(getattr(self.options, name).value) for name in self.LOGIC_OPTION_NAMES},
+            "entrance_map": list(getattr(self, "entrance_map", range(26))),
+            "keyringed_level_names": sorted(getattr(self, "keyringed_level_names", set())),
+        }
+
     def fill_slot_data(self) -> Dict[str, Any]:
         from BaseClasses import ItemClassification
         from .items import ITEM_TABLE, KEY_ITEM_TABLE, KEYRING_ITEM_TABLE
@@ -1317,4 +1331,5 @@ class WL3World(World):
             "shop_prices":             list(self.shop_prices),
             "progression_item_names":  progression_names,
             "loc_items":               loc_items,
+            "logic":                   self.logic_settings(),
         }

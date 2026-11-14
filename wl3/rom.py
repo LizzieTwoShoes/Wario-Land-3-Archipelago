@@ -1834,6 +1834,8 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
     }
     patch.write_file("enemizer_params.json",
                      _json.dumps(enemizer_params).encode("utf-8"))
+    # The seed's logic settings, for the offline debug tool's Logic page.
+    patch.write_file("logic.json", _json.dumps(world.logic_settings()).encode("utf-8"))
 
     # Embed the base bsdiff4 patch and token data into self.files so
     # APProcedurePatch.write_contents() includes them in the output zip.
