@@ -1002,11 +1002,6 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E1 - Door D Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 93,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
     "E1 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 94,
         classification=ItemClassification.progression,

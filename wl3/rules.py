@@ -1040,17 +1040,12 @@ DOOR_RULES: dict = {
     "Above the Clouds - Big Coin 8":           _has("S6 - Door D Key"),
     "Above the Clouds - Blue Chest":           _has("S6 - Door F Key"),
     # E1 The Stagnant Swamp, from the lobby: C (only there once the Foot of
-    # Stone is found) / D -> the wood hub (bottom /
+    # Stone is found) / D (never locked) -> the wood hub (bottom /
     # top; red key, coins 4, 5; Jamano and the green chest past pipes G/F),
     # whose E -> the green key room (coin 8); H -> the blue chest room (blue
     # key, coins 6, 7).
-    "The Stagnant Swamp - Red Key":              _o(_c(_has("E1 - Door C Key"), _has("Foot of Stone")), _has("E1 - Door D Key")),
-    "The Stagnant Swamp - Big Coin 4":           _o(_c(_has("E1 - Door C Key"), _has("Foot of Stone")), _has("E1 - Door D Key")),
-    "The Stagnant Swamp - Big Coin 5":           _o(_c(_has("E1 - Door C Key"), _has("Foot of Stone")), _has("E1 - Door D Key")),
-    "The Stagnant Swamp - Green Chest":          _o(_c(_has("E1 - Door C Key"), _has("Foot of Stone")), _has("E1 - Door D Key")),
-    "Jamano - Defeated":                      _o(_c(_has("E1 - Door C Key"), _has("Foot of Stone")), _has("E1 - Door D Key")),
-    "The Stagnant Swamp - Green Key":            _c(_o(_c(_has("E1 - Door C Key"), _has("Foot of Stone")), _has("E1 - Door D Key")), _has("E1 - Door E Key")),
-    "The Stagnant Swamp - Big Coin 8":           _c(_o(_c(_has("E1 - Door C Key"), _has("Foot of Stone")), _has("E1 - Door D Key")), _has("E1 - Door E Key")),
+    "The Stagnant Swamp - Green Key":            _has("E1 - Door E Key"),
+    "The Stagnant Swamp - Big Coin 8":           _has("E1 - Door E Key"),
     "The Stagnant Swamp - Blue Chest":           _has("E1 - Door H Key"),
     "The Stagnant Swamp - Blue Key":             _has("E1 - Door H Key"),
     "The Stagnant Swamp - Big Coin 6":           _has("E1 - Door H Key"),
@@ -1729,7 +1724,6 @@ def set_rules(world: "WL3World") -> None:
         "The Grasslands - Door I Sign": _has("S1 - Door G Key"),
         "Cave of Flames - Door G Sign": _c(_has("S5 - Door E Key"), _has("Rust Spray")),
         "The Stagnant Swamp - Door C Sign": _has("Foot of Stone"),
-        "The Stagnant Swamp - Door E Sign": _o(_c(_has("E1 - Door C Key"), _has("Foot of Stone")), _has("E1 - Door D Key")),
         "The East Crater - Door D Sign": _has("E6 - Door C Key"),
         "Desert Ruins - Door E Sign": _has("W1 - Door B Key"),
         "Desert Ruins - Door F Sign": _has("W1 - Door D Key"),

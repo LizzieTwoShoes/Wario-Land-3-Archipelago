@@ -415,7 +415,7 @@ _DOOR_SIGNS = [
     (90, 18, "D"),  # DOOR_S6_D
     (91, 18, "F"),  # DOOR_S6_F
     (92, 19, "C"),  # DOOR_E1_C
-    (93, 19, "D"),  # DOOR_E1_D
+    # 93: DOOR_E1_D dropped (always-open QoL door)
     (94, 19, "E"),  # DOOR_E1_E
     (95, 19, "H"),  # DOOR_E1_H
     (96, 20, "A"),  # DOOR_E2_A
