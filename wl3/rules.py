@@ -814,20 +814,42 @@ able_to_beat_rudy = _c(has_grab_2,_o(has_overalls_1,has_vampire_1,_has("Zombie F
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
 
+# Doors that are a second way in: OR-ed onto the location's whole rule (with
+# the level's rule), after DOOR_RULES are applied.
+DOOR_ALT_RULES: dict = {
+    # N1 C (Zombie Form or overalls to reach) drops into the red key area
+    "Out of the Woods - Red Key":    _c(_has("N1 - Door C Key"), _o(_has("Zombie Form"), has_overalls_1)),
+    "Out of the Woods - Red Chest":  _c(_has("N1 - Door C Key"), _o(_has("Zombie Form"), has_overalls_1)),
+    "Out of the Woods - Big Coin 7": _c(_has("N1 - Door C Key"), _o(_has("Zombie Form"), has_overalls_1)),
+}
+
 DOOR_RULES: dict = {
     # N1 Out of the Woods
     "Out of the Woods - Green Chest":         _has("N1 - Door A Key"),
     "Out of the Woods - Big Coin 4":          _has("N1 - Door A Key"),
     "Out of the Woods - Grey Chest":          _has("N1 - Door B Key"),
-    # N2 The Peaceful Village
+    # N2 The Peaceful Village. A -> the coin 3 room, whose pipe drops into the
+    # bottom room (blue key / chest, coins 7, 8); E (the invisible door) ->
+    # the right side's big room (coin 6), whose J -> the green key room (coin
+    # 4) and whose pipe -> the green chest room. (Checked with
+    # tools/door_paths.py.)
     "The Peaceful Village - Big Coin 3":      _has("N2 - Door A Key"),
+    "The Peaceful Village - Blue Key":        _has("N2 - Door A Key"),
+    "The Peaceful Village - Blue Chest":      _has("N2 - Door A Key"),
+    "The Peaceful Village - Big Coin 7":      _has("N2 - Door A Key"),
+    "The Peaceful Village - Big Coin 8":      _has("N2 - Door A Key"),
+    # D and E are both up a ledge: high jump for the door (and its sign)
+    "The Peaceful Village - Big Coin 6":      _c(_has("N2 - Door E Key"), can_jump_high),
+    "The Peaceful Village - Green Chest":     _c(_has("N2 - Door E Key"), can_jump_high),
+    "The Peaceful Village - Door J Sign":     _c(_has("N2 - Door E Key"), can_jump_high),
     # B room is also reachable from the roof via pipe F (Flute / high jump)
     "The Peaceful Village - Red Key":         _o(_has("N2 - Door B Key"), _has("Flute"), can_jump_high),
     "The Peaceful Village - Coin Block 3":    _o(_has("N2 - Door B Key"), _has("Flute"), can_jump_high),
+    "The Peaceful Village - Big Coin 5":      _o(_has("N2 - Door B Key"), _has("Flute"), can_jump_high),
     "The Peaceful Village - Grey Chest":      _has("N2 - Door C Key"),
-    "The Peaceful Village - Red Chest":       _has("N2 - Door D Key"),
-    "The Peaceful Village - Green Key":       _has("N2 - Door J Key"),
-    "The Peaceful Village - Big Coin 4":      _has("N2 - Door J Key"),
+    "The Peaceful Village - Red Chest":       _c(_has("N2 - Door D Key"), can_jump_high),
+    "The Peaceful Village - Green Key":       _c(_has("N2 - Door E Key"), _has("N2 - Door J Key"), can_jump_high),
+    "The Peaceful Village - Big Coin 4":      _c(_has("N2 - Door E Key"), _has("N2 - Door J Key"), can_jump_high),
     # N3 The Vast Plain
     "The Vast Plain - Green Chest":           _has("N3 - Door H Key"),
     "The Vast Plain - Blue Chest":            _has("N3 - Door J Key"),
@@ -843,6 +865,7 @@ DOOR_RULES: dict = {
     "Bank of the Wild River - Blue Key":      _has("N4 - Door H Key"),
     "Bank of the Wild River - Blue Chest":    _has("N4 - Door H Key"),
     "Bank of the Wild River - Big Coin 8":    _has("N4 - Door H Key"),
+    "Bank of the Wild River - Big Coin 5":    _has("N4 - Door H Key"),
     "Pesce - Defeated":                       _c(_has("N4 - Door F Key"), _has("N4 - Door G Key")),
     # N5 The Tidal Coast. A: outside -> the octopi room (and the blue chest
     # room past it); D: outside -> the vine rooms; E: outside -> the green
@@ -860,8 +883,9 @@ DOOR_RULES: dict = {
     # from the pipe room's lower pipes, past C); B -> the minigame / red
     # chest room; C -> the pipe room (green), whose pipe F leads to the dark
     # room, where G -> the blue chest room.
-    "Sea Turtle Rocks - Grey Chest":          _o(_has("N6 - Door A Key"), _has("N6 - Door C Key")),
-    "Sea Turtle Rocks - Big Coin 5":          _o(_has("N6 - Door A Key"), _has("N6 - Door C Key")),
+    # (no transition from C's side reaches Scowler's room: A only)
+    "Sea Turtle Rocks - Grey Chest":          _has("N6 - Door A Key"),
+    "Sea Turtle Rocks - Big Coin 5":          _has("N6 - Door A Key"),
     "Sea Turtle Rocks - Red Key":             _has("N6 - Door B Key"),
     "Sea Turtle Rocks - Red Chest":           _has("N6 - Door B Key"),
     "Sea Turtle Rocks - Green Key":           _has("N6 - Door C Key"),
@@ -888,7 +912,7 @@ DOOR_RULES: dict = {
     "Desert Ruins - Green Chest":             _has("W1 - Door D Key"),
     "Desert Ruins - Big Coin 7":              _has("W1 - Door D Key"),
     "Desert Ruins - Red Chest":               _c(_has("W1 - Door D Key"), _has("W1 - Door F Key")),
-    "Desert Ruins - Big Coin 3":              _c(_has("W1 - Door D Key"), _has("W1 - Door G Key")),
+    "Desert Ruins - Big Coin 3":              _c(_has("W1 - Door D Key"), _has("W1 - Door G Key"), _has("W1 - Door H Key")),
     "Desert Ruins - Blue Key":                _c(_has("W1 - Door D Key"), _has("W1 - Door G Key"), _has("W1 - Door H Key")),
     "Desert Ruins - Big Coin 8":              _c(_has("W1 - Door D Key"), _has("W1 - Door G Key"), _has("W1 - Door H Key")),
     "Desert Ruins - Blue Chest":              _c(_c(_has("W1 - Door D Key"), _has("W1 - Door G Key"), _has("W1 - Door H Key")), _has("W1 - Door I Key")),
@@ -934,6 +958,7 @@ DOOR_RULES: dict = {
     "A Town in Chaos - Red Chest":            _c(_has("W4 - Door B Key"), _has("W4 - Door C Key"), _has("W4 - Door E Key")),
     "Shoot - Defeated":                       _c(_has("W4 - Door B Key"), _has("W4 - Door C Key"), _has("W4 - Door E Key")),
     "A Town in Chaos - Green Chest":          _has("W4 - Door G Key"),
+    "A Town in Chaos - Green Key":            _has("W4 - Door G Key"),
     "A Town in Chaos - Big Coin 5":           _has("W4 - Door G Key"),
     "A Town in Chaos - Big Coin 7":           _c(_has("W4 - Door G Key"), _has("W4 - Door H Key")),
     "A Town in Chaos - Big Coin 8":           _c(_has("W4 - Door G Key"), _has("W4 - Door I Key")),
@@ -1044,8 +1069,15 @@ DOOR_RULES: dict = {
     # top; red key, coins 4, 5; Jamano and the green chest past pipes G/F),
     # whose E -> the green key room (coin 8); H -> the blue chest room (blue
     # key, coins 6, 7).
-    "The Stagnant Swamp - Green Key":            _has("E1 - Door E Key"),
-    "The Stagnant Swamp - Big Coin 8":           _has("E1 - Door E Key"),
+    # D in the lobby is only where Wario comes out of the hub (its cell has
+    # no room to go to), so C is the only way in
+    "The Stagnant Swamp - Red Key":              _has("E1 - Door C Key"),
+    "The Stagnant Swamp - Big Coin 4":           _has("E1 - Door C Key"),
+    "The Stagnant Swamp - Big Coin 5":           _has("E1 - Door C Key"),
+    "The Stagnant Swamp - Green Chest":          _has("E1 - Door C Key"),
+    "The Stagnant Swamp - Door E Sign":          _has("E1 - Door C Key"),
+    "The Stagnant Swamp - Green Key":            _c(_has("E1 - Door C Key"), _has("E1 - Door E Key")),
+    "The Stagnant Swamp - Big Coin 8":           _c(_has("E1 - Door C Key"), _has("E1 - Door E Key")),
     "The Stagnant Swamp - Blue Chest":           _has("E1 - Door H Key"),
     "The Stagnant Swamp - Blue Key":             _has("E1 - Door H Key"),
     "The Stagnant Swamp - Big Coin 6":           _has("E1 - Door H Key"),
@@ -1085,10 +1117,38 @@ DOOR_RULES: dict = {
     "The Colossal Hole - Red Chest":            _has("E4 - Door B Key"),
     "The Colossal Hole - Big Coin 8":           _has("E4 - Door B Key"),
     "The Colossal Hole - Green Chest":          _has("E4 - Door C Key"),
+    "The Colossal Hole - Green Key":            _has("E4 - Door C Key"),
     "The Colossal Hole - Big Coin 6":           _has("E4 - Door C Key"),
     "The Colossal Hole - Blue Chest":           _has("E4 - Door D Key"),
     "The Colossal Hole - Blue Key":             _has("E4 - Door D Key"),
     "The Colossal Hole - Big Coin 7":           _has("E4 - Door D Key"),
+    # E5 The Warped Void. The main hub's left part (G, coin 1) is behind the
+    # warp-ring column: the Warp Removal Apparatus, or K (card room) -> L.
+    # B (hub) -> the grey key hub's bottom (grey key, coin 3), whose C -> the
+    # Omodon hub; past its warp-ring floor, the red room (red chest / key,
+    # coins 5, 6); its D -> the grey key hub's top (coin 2). G -> the green
+    # hub (green key, chest, coin 4). K -> the card room (coins 7, 8), whose
+    # N -> the Omodon hub's left (O -> the blue chest) and M -> its right
+    # (P -> the blue key).
+    "The Warped Void - Grey Key":             _has("E5 - Door B Key"),
+    "The Warped Void - Big Coin 3":           _has("E5 - Door B Key"),
+    "The Warped Void - Red Chest":            _c(_has("E5 - Door B Key"), _has("E5 - Door C Key")),
+    "The Warped Void - Red Key":              _c(_has("E5 - Door B Key"), _has("E5 - Door C Key")),
+    "The Warped Void - Big Coin 5":           _c(_has("E5 - Door B Key"), _has("E5 - Door C Key")),
+    "The Warped Void - Big Coin 6":           _c(_has("E5 - Door B Key"), _has("E5 - Door C Key")),
+    "The Warped Void - Big Coin 2":           _c(_has("E5 - Door B Key"), _has("E5 - Door C Key"), _has("E5 - Door D Key")),
+    "The Warped Void - Big Coin 1":           _o(_has("Warp Removal Apparatus"),
+                                                 _c(_has("E5 - Door K Key"), _has("E5 - Door L Key"))),
+    "The Warped Void - Green Chest":          _c(_has("E5 - Door G Key"), _o(_has("Warp Removal Apparatus"),
+                                                 _c(_has("E5 - Door K Key"), _has("E5 - Door L Key")))),
+    "The Warped Void - Green Key":            _c(_has("E5 - Door G Key"), _o(_has("Warp Removal Apparatus"),
+                                                 _c(_has("E5 - Door K Key"), _has("E5 - Door L Key")))),
+    "The Warped Void - Big Coin 4":           _c(_has("E5 - Door G Key"), _o(_has("Warp Removal Apparatus"),
+                                                 _c(_has("E5 - Door K Key"), _has("E5 - Door L Key")))),
+    "The Warped Void - Big Coin 7":           _has("E5 - Door K Key"),
+    "The Warped Void - Big Coin 8":           _has("E5 - Door K Key"),
+    "The Warped Void - Blue Chest":           _c(_has("E5 - Door K Key"), _has("E5 - Door N Key"), _has("E5 - Door O Key")),
+    "The Warped Void - Blue Key":             _c(_has("E5 - Door K Key"), _has("E5 - Door M Key"), _has("E5 - Door P Key")),
     # E6 The East Crater: B (crater) -> the green chest room (green key,
     # coin 6); C (red chest room) -> the Omodon room (coin 5), whose D -> the
     # red chest room's right part (red chest).
@@ -1696,11 +1756,18 @@ def set_rules(world: "WL3World") -> None:
         # in the water before their doors: the swim there is the chest's
         "The Tidal Coast - Door C Sign": (red, None),
         "The Tidal Coast - Door J Sign": (blue, "N5 - Door A Key"),
+        # E5 card room (reached like the blue chest, through K)
+        "The Warped Void - Door L Sign": (blue, "E5 - Door K Key"),
+        "The Warped Void - Door M Sign": (blue, "E5 - Door K Key"),
+        "The Warped Void - Door N Sign": (blue, "E5 - Door K Key"),
     }
     # A-D's signposts are out when their door is: breaking in is what their
     # room's own logic asks for first.
     # signposts past another locked door: the level plus those keys
     sign_needs_keys = {
+        "Out of the Woods - Door C Sign": _o(_has("Zombie Form"), has_overalls_1),
+        "The Peaceful Village - Door D Sign": can_jump_high,
+        "The Peaceful Village - Door E Sign": can_jump_high,
         "The Tidal Coast - Door F Sign": _has("N5 - Door D Key"),
         "The Tidal Coast - Door I Sign": _has("N5 - Door D Key"),
         # B's door is only there once the Scepter clears the water; G's
@@ -1731,6 +1798,19 @@ def set_rules(world: "WL3World") -> None:
         "Desert Ruins - Door H Sign": _c(_has("W1 - Door D Key"), _has("W1 - Door G Key")),
         "Desert Ruins - Door I Sign": _c(_has("W1 - Door D Key"), _has("W1 - Door G Key"), _has("W1 - Door H Key")),
         "Sea Turtle Rocks - Door G Sign": _c(_has("N6 - Door C Key"), _has("Night Vision Scope")),
+        # E5: the card room's K door is up by the Para-Goom (blue chest's
+        # logic); the hub's left part takes the apparatus or K -> L
+        "The Warped Void - Door C Sign": _has("E5 - Door B Key"),
+        "The Warped Void - Door D Sign": _c(_has("E5 - Door B Key"), _has("E5 - Door C Key")),
+        "The Warped Void - Door E Sign": _c(_has("E5 - Door B Key"), _has("E5 - Door C Key"), _has("E5 - Door D Key")),
+        "The Warped Void - Door G Sign": _o(_has("Warp Removal Apparatus"),
+                                           _c(has_key_cards, has_grab_1, _has("E5 - Door K Key"), _has("E5 - Door L Key"))),
+        "The Warped Void - Door I Sign": _c(_has("E5 - Door G Key"), _o(_has("Warp Removal Apparatus"),
+                                           _c(has_key_cards, has_grab_1, _has("E5 - Door K Key"), _has("E5 - Door L Key")))),
+        "The Warped Void - Door O Sign": _c(_o(_c(has_key_cards, has_grab_1), _c(_has("Warp Removal Apparatus"), can_fly)),
+                                           _has("E5 - Door K Key"), _has("E5 - Door N Key")),
+        "The Warped Void - Door P Sign": _c(_o(_c(has_key_cards, has_grab_1), _c(_has("Warp Removal Apparatus"), can_fly)),
+                                           _has("E5 - Door K Key"), _has("E5 - Door M Key")),
         "The Tidal Coast - Door H Sign": _c(_has("N5 - Door D Key"),
                                             _o(_has("N5 - Door F Key"), _has("N5 - Door I Key"))),
     }
@@ -1752,6 +1832,7 @@ def set_rules(world: "WL3World") -> None:
         "The Colossal Hole - Door D Sign": (chest_logic, blue),
         "The Volcano's Base - Door I Sign": (chest_logic, blue),
         "The Volcano's Base - Door K Sign": (key_logic, blue),
+        "The Warped Void - Door K Sign": (chest_logic, blue),
     }
     for loc_name, loc_data in DOOR_SIGN_LOCATION_TABLE.items():
         if loc_name in sign_rule_from:
@@ -1819,6 +1900,14 @@ def set_rules(world: "WL3World") -> None:
             continue
         loc.access_rule = (lambda state, old=loc.access_rule, dr=door_rule:
                            old(state) and dr(state, player))
+    for loc_name, alt in DOOR_ALT_RULES.items():
+        try:
+            loc = mw.get_location(loc_name, player)
+        except KeyError:
+            continue
+        lr = level_rules.get(loc_name.split(" - ")[0])
+        loc.access_rule = (lambda state, old=loc.access_rule, a=alt, r=lr:
+                           old(state) or ((r is None or r(state, player)) and a(state, player)))
 
     # Shop item filter — reject coin bundles (ex-crests). No point
     # spending coins to buy more coins.

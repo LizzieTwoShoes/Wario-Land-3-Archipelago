@@ -554,7 +554,7 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
     ),
     "N1 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 3,
-        classification=ItemClassification.useful,  # gates nothing on its own — see DOOR_RULES
+        classification=ItemClassification.progression,  # second way to the red key area (DOOR_ALT_RULES)
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
     "N2 - Door A Key": WL3ItemData(
@@ -579,7 +579,7 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
     ),
     "N2 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 8,
-        classification=ItemClassification.useful,  # big room is also reachable via I
+        classification=ItemClassification.progression,  # big room is also reachable via I
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
     "N3 - Door H Key": WL3ItemData(
@@ -1119,6 +1119,66 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
     ),
     "E7 - Door F Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 117,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 118,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 119,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 120,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 121,
+        classification=ItemClassification.useful,  # back into the hub: gates nothing
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door G Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 122,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door I Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 123,
+        classification=ItemClassification.useful,  # back into the hub: gates nothing
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door K Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 124,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door L Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 125,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door M Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 126,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door N Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 127,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door O Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 128,
+        classification=ItemClassification.progression,
+        tier_ids=[0x4E],  # Red Gem placeholder
+    ),
+    "E5 - Door P Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 129,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
