@@ -421,14 +421,15 @@ class WL3World(World):
                 for _ in range(count):
                     items.append(self.create_item(name))
 
-        # Door keys — always added, one copy each. A door with a signpost
+        # Door keys — one copy each, with the Locked Doors option. A door with a signpost
         # brings its own location (DOOR_SIGN_LOCATION_TABLE), so its key is
         # added with the signposts below, outside the base 100; any other
         # door key takes one of the base 100's filler slots.
         sign_doors = {data.door_index for data in DOOR_SIGN_LOCATION_TABLE.values()}
         signed_door_keys = [name for name, data in ROOM_KEY_ITEMS.items()
                             if data.ap_id - ROOM_KEY_BASE_ITEM_ID in sign_doors]
-        for name in ROOM_KEY_ITEMS:
+        locked_doors = bool(self.options.locked_doors)
+        for name in (ROOM_KEY_ITEMS if locked_doors else ()):
             if name not in signed_door_keys:
                 items.append(self.create_item(name))
 
@@ -498,10 +499,11 @@ class WL3World(World):
 
         # Door signposts: one location per signposted door, filled by that
         # door's key (filler if a signpost's door has no key item).
-        for name in signed_door_keys:
-            items.append(self.create_item(name))
-        for _ in range(len(DOOR_SIGN_LOCATION_TABLE) - len(signed_door_keys)):
-            items.append(self.create_item(self.random.choice(filler_items)))
+        if locked_doors:
+            for name in signed_door_keys:
+                items.append(self.create_item(name))
+            for _ in range(len(DOOR_SIGN_LOCATION_TABLE) - len(signed_door_keys)):
+                items.append(self.create_item(self.random.choice(filler_items)))
 
         # Trap replacement: swap a % of filler items for random trap items.
         # Runs after key shuffle so keyring-padding fillers are also candidates.
@@ -1114,7 +1116,7 @@ class WL3World(World):
             return lines
 
         data = bytearray([space] * (MAX_LOCKED_DOORS * lines_per * cols))
-        for loc_name, loc_data in DOOR_SIGN_LOCATION_TABLE.items():
+        for loc_name, loc_data in (DOOR_SIGN_LOCATION_TABLE.items() if self.options.locked_doors else ()):
             item = self.multiworld.get_location(loc_name, self.player).item
             if item is None:
                 continue
@@ -1136,7 +1138,7 @@ class WL3World(World):
         from .items import SIDE_TABLE_CODES
         sign_items = [0xFF] * MAX_LOCKED_DOORS
         trap_table = [0] * MAX_LOCKED_DOORS
-        for loc_name, loc_data in DOOR_SIGN_LOCATION_TABLE.items():
+        for loc_name, loc_data in (DOOR_SIGN_LOCATION_TABLE.items() if self.options.locked_doors else ()):
             item = self.multiworld.get_location(loc_name, self.player).item
             sign_items[loc_data.door_index] = self._side_item_display(item)[0]
             if item is not None and item.player == self.player:
@@ -1287,7 +1289,8 @@ class WL3World(World):
             all_locs = {**all_locs, **SHOP_LOCATION_TABLE}
         if self.options.coin_blocksanity:
             all_locs = {**all_locs, **COIN_BLOCK_LOCATION_TABLE}
-        all_locs = {**all_locs, **DOOR_SIGN_LOCATION_TABLE}
+        if self.options.locked_doors:
+            all_locs = {**all_locs, **DOOR_SIGN_LOCATION_TABLE}
         for loc_name, loc_data in all_locs.items():
             loc = self.multiworld.get_location(loc_name, self.player)
             if loc.item is not None:
@@ -1325,7 +1328,7 @@ class WL3World(World):
             "in_game_messages":        int(self.options.in_game_messages),
             "boss_defeats":            bool(self.options.boss_defeats),
             "coin_blocksanity":        bool(self.options.coin_blocksanity),
-            "door_signs":              True,  # client watches wDoorSignFlags
+            "door_signs":              bool(self.options.locked_doors),  # client watches wDoorSignFlags
             "shopsanity":              bool(self.options.shopsanity),
             "shop_price_tier":         int(self.options.shop_price_tier),
             "shop_prices":             list(self.shop_prices),

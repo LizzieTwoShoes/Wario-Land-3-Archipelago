@@ -547,12 +547,12 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N1 - Door B Key": WL3ItemData(
+    "N1 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 2,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N1 - Door C Key": WL3ItemData(
+    "N1 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 3,
         classification=ItemClassification.progression,  # second way to the red key area (DOOR_ALT_RULES)
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -567,27 +567,27 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N2 - Door D Key": WL3ItemData(
+    "N2 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 6,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N2 - Door J Key": WL3ItemData(
+    "N2 - Door F Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 7,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N2 - Door E Key": WL3ItemData(
+    "N2 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 8,
         classification=ItemClassification.progression,  # big room is also reachable via I
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N3 - Door H Key": WL3ItemData(
+    "N3 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 9,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N3 - Door J Key": WL3ItemData(
+    "N3 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 10,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -602,27 +602,27 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N4 - Door H Key": WL3ItemData(
+    "N4 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 13,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N4 - Door A Key": WL3ItemData(
+    "N4 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 14,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N4 - Door B Key": WL3ItemData(
+    "N4 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 15,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N4 - Door C Key": WL3ItemData(
+    "N4 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 16,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N4 - Door D Key": WL3ItemData(
+    "N4 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 17,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -632,24 +632,24 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N5 - Door D Key": WL3ItemData(
+    "N5 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 19,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N5 - Door E Key": WL3ItemData(
+    "N5 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 20,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N5 - Door F Key": WL3ItemData(
+    "N5 - Door H Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 21,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N5 - Door H Key": WL3ItemData(
+    "N5 - Door F Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 22,
-        classification=ItemClassification.useful,  # only leads back up: gates nothing
+        classification=ItemClassification.progression,  # only leads back up: gates nothing
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
     "N5 - Door I Key": WL3ItemData(
@@ -657,57 +657,57 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N5 - Door C Key": WL3ItemData(
+    "N5 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 24,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N5 - Door J Key": WL3ItemData(
+    "N5 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 25,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N6 - Door A Key": WL3ItemData(
+    "N6 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 26,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N6 - Door B Key": WL3ItemData(
+    "N6 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 27,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N6 - Door C Key": WL3ItemData(
+    "N6 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 28,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "N6 - Door G Key": WL3ItemData(
+    "N6 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 29,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W1 - Door A Key": WL3ItemData(
+    "W1 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 30,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W1 - Door B Key": WL3ItemData(
+    "W1 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 31,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W1 - Door C Key": WL3ItemData(
+    "W1 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 32,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W1 - Door D Key": WL3ItemData(
+    "W1 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 33,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W1 - Door E Key": WL3ItemData(
+    "W1 - Door I Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 34,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -717,7 +717,7 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W1 - Door G Key": WL3ItemData(
+    "W1 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 36,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -727,52 +727,52 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W1 - Door I Key": WL3ItemData(
+    "W1 - Door G Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 38,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W2 - Door C Key": WL3ItemData(
+    "W2 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 39,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W2 - Door E Key": WL3ItemData(
+    "W2 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 40,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W2 - Door G Key": WL3ItemData(
+    "W2 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 41,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W2 - Door H Key": WL3ItemData(
+    "W2 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 42,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W2 - Door I Key": WL3ItemData(
+    "W2 - Door G Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 43,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W2 - Door K Key": WL3ItemData(
+    "W2 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 44,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W3 - Door A Key": WL3ItemData(
+    "W3 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 45,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W3 - Door D Key": WL3ItemData(
+    "W3 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 46,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W3 - Door F Key": WL3ItemData(
+    "W3 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 47,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -787,57 +787,57 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W4 - Door C Key": WL3ItemData(
+    "W4 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 50,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W4 - Door E Key": WL3ItemData(
+    "W4 - Door G Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 51,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W4 - Door G Key": WL3ItemData(
+    "W4 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 52,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W4 - Door H Key": WL3ItemData(
+    "W4 - Door J Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 53,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W4 - Door I Key": WL3ItemData(
+    "W4 - Door K Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 54,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W4 - Door J Key": WL3ItemData(
+    "W4 - Door L Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 55,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W4 - Door K Key": WL3ItemData(
+    "W4 - Door H Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 56,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W4 - Door L Key": WL3ItemData(
+    "W4 - Door I Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 57,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W5 - Door A Key": WL3ItemData(
+    "W5 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 58,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W5 - Door B Key": WL3ItemData(
+    "W5 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 59,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W5 - Door E Key": WL3ItemData(
+    "W5 - Door G Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 60,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -847,32 +847,32 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W5 - Door G Key": WL3ItemData(
+    "W5 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 62,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W5 - Door H Key": WL3ItemData(
+    "W5 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 63,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W5 - Door I Key": WL3ItemData(
+    "W5 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 64,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W6 - Door A Key": WL3ItemData(
+    "W6 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 65,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W6 - Door C Key": WL3ItemData(
+    "W6 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 66,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "W6 - Door D Key": WL3ItemData(
+    "W6 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 67,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -902,52 +902,52 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S1 - Door F Key": WL3ItemData(
+    "S1 - Door G Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 73,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S1 - Door G Key": WL3ItemData(
+    "S1 - Door F Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 74,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S1 - Door H Key": WL3ItemData(
+    "S1 - Door I Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 75,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S1 - Door I Key": WL3ItemData(
+    "S1 - Door H Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 76,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S2 - Door A Key": WL3ItemData(
+    "S2 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 77,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S2 - Door B Key": WL3ItemData(
+    "S2 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 78,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S2 - Door C Key": WL3ItemData(
+    "S2 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 79,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S2 - Door D Key": WL3ItemData(
+    "S2 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 80,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S2 - Door E Key": WL3ItemData(
+    "S2 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 81,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S3 - Door D Key": WL3ItemData(
+    "S3 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 82,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -957,17 +957,17 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S5 - Door E Key": WL3ItemData(
+    "S5 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 84,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S5 - Door G Key": WL3ItemData(
+    "S5 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 85,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S5 - Door H Key": WL3ItemData(
+    "S5 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 86,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -982,7 +982,7 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S6 - Door C Key": WL3ItemData(
+    "S6 - Door F Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 89,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -992,22 +992,22 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "S6 - Door F Key": WL3ItemData(
+    "S6 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 91,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E1 - Door C Key": WL3ItemData(
+    "E1 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 92,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E1 - Door E Key": WL3ItemData(
+    "E1 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 94,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E1 - Door H Key": WL3ItemData(
+    "E1 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 95,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -1017,12 +1017,12 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E2 - Door B Key": WL3ItemData(
+    "E2 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 97,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E2 - Door C Key": WL3ItemData(
+    "E2 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 98,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -1062,37 +1062,37 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E3 - Door I Key": WL3ItemData(
+    "E3 - Door F Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 106,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E3 - Door J Key": WL3ItemData(
+    "E3 - Door E Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 107,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E4 - Door A Key": WL3ItemData(
+    "E4 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 108,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E4 - Door B Key": WL3ItemData(
+    "E4 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 109,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E4 - Door C Key": WL3ItemData(
+    "E4 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 110,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E4 - Door D Key": WL3ItemData(
+    "E4 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 111,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E6 - Door B Key": WL3ItemData(
+    "E6 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 112,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
@@ -1102,86 +1102,87 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E6 - Door D Key": WL3ItemData(
+    "E6 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 114,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E7 - Door D Key": WL3ItemData(
+    "E7 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 115,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E7 - Door E Key": WL3ItemData(
+    "E7 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 116,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E7 - Door F Key": WL3ItemData(
+    "E7 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 117,
         classification=ItemClassification.progression,
         tier_ids=[0x4E],  # Red Gem placeholder
     ),
-    "E5 - Door B Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 118,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door C Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 119,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door D Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 120,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door E Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 121,
-        classification=ItemClassification.useful,  # back into the hub: gates nothing
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door G Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 122,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door I Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 123,
-        classification=ItemClassification.useful,  # back into the hub: gates nothing
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door K Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 124,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door L Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 125,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door M Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 126,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door N Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 127,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door O Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 128,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "E5 - Door P Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 129,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
+    # E5 doors off for now (2026-11-18): too many doors and locks for the logic
+    # "E5 - Door A Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 118,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door O Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 119,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door D Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 120,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door N Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 121,
+    #     classification=ItemClassification.useful,  # back into the hub: gates nothing
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door C Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 122,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door F Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 123,
+    #     classification=ItemClassification.useful,  # back into the hub: gates nothing
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door B Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 124,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door K Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 125,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door L Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 126,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door M Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 127,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door J Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 128,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
+    # "E5 - Door I Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 129,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x4E],  # Red Gem placeholder
+    # ),
 }
 
 # Door keys are granted offline through the same Trap*Table side tables as

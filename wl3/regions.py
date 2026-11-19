@@ -93,8 +93,8 @@ def create_regions(world: "WL3World") -> Dict[str, Region]:
             region.locations.append(loc)
 
     # Door signposts — one per locked door with a signpost (see
-    # DOOR_SIGN_LOCATION_TABLE). Locked doors are always on for now.
-    for loc_name, loc_data in DOOR_SIGN_LOCATION_TABLE.items():
+    # DOOR_SIGN_LOCATION_TABLE), with the Locked Doors option.
+    for loc_name, loc_data in (DOOR_SIGN_LOCATION_TABLE.items() if world.options.locked_doors else ()):
         region = all_regions[loc_data.region]
         loc = Location(player, loc_name, loc_data.ap_id, region)
         region.locations.append(loc)

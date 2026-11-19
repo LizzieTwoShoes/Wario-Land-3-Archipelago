@@ -332,6 +332,16 @@ class CoinBlocksanity(Toggle):
     default = 0
 
 
+class LockedDoors(Toggle):
+    """Adds 117 "Door Keys" to the pool. The doors will now show a locked
+    door graphic on them, show a plaque with their corresponding letter above
+    them, and a sign beside them. Reading the sign by pressing "UP" will
+    grant you an item (a message will tell you what the sign has granted
+    you)."""
+    display_name = "Locked Doors"
+    default = 0
+
+
 class BossDefeats(Toggle):
     """Adds 10 boss-defeat locations to the pool. This option can be used
      with "Bosses_Required" as well 
@@ -523,6 +533,7 @@ class WL3Options(PerGameCommonOptions):
     in_game_messages:             InGameMessages
     bigcoinsanity:                BigCoinsanity
     coin_blocksanity:             CoinBlocksanity
+    locked_doors:                 LockedDoors
     boss_defeats:                 BossDefeats
     shopsanity:                   Shopsanity
     shop_price_tier:              ShopPriceTier

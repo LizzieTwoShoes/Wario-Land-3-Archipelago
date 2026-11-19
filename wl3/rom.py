@@ -406,6 +406,12 @@ SHOPSANITY_MODE_OFFSET           = 0x080F9D   # ShopsanityModeOpt byte in Bank 2
 SHOP_SLOT_ITEMS_OFFSET           = 0x080F9E   # ShopSlotItems table in Bank 20 (10 bytes = treasure ID per shop slot)
 SHOP_SLOT_NAMES_OFFSET           = 0x080FA8   # ShopSlotNamesTable in Bank 20 (10 slots × 20 bytes = 200 bytes, msg-font encoded)
 SHOP_SLOT_KEY_COLORS_OFFSET      = 0x081072   # ShopSlotKeyColors table in Bank 20 (10 bytes, $FF = not a key, 0-3 = grey/red/green/blue)
+# Locked Doors off: an end mark ($ff) at the top of each door table, so the
+# door system finds no doors, plaques, signposts, palettes or padlock art
+LOCKED_DOORS_TABLE_OFFSET        = 0x023A2A   # LockedDoors
+DOOR_SIGNS_TABLE_OFFSET          = 0x022FA7   # DoorSigns
+DOOR_PALETTES_TABLE_OFFSET       = 0x022C0E   # DoorPalettes
+PADLOCK_LOADS_TABLE_OFFSET       = 0x022F19   # PadlockLoads
 HIDDEN_PASSAGES_REVEALED_OFFSET = 0x01FE3F  # HiddenPassagesRevealedOpt byte (floating ROMX section — re-check after linker shifts)
 GOLF_PRICE_OPT_OFFSET            = 0x003A00   # GolfPriceOpt byte in Home bank
 GOLF_BUILDING_OPT_OFFSET         = 0x003A01   # GolfBuildingOpt byte in Home bank
@@ -1790,6 +1796,13 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
     # 0 = vanilla, 1 = reveal hidden blocks, 2 = reveal + tint always-colour-coin blocks
     patch.write_token(APTokenTypes.WRITE, HIDDEN_PASSAGES_REVEALED_OFFSET,
                       bytes([int(world.options.hidden_passages_revealed)]))
+
+    # Locked Doors off — end every door table at its first row: no door is
+    # locked and no padlock, plaque or signpost is drawn.
+    if not world.options.locked_doors:
+        for offset in (LOCKED_DOORS_TABLE_OFFSET, DOOR_SIGNS_TABLE_OFFSET,
+                       DOOR_PALETTES_TABLE_OFFSET, PADLOCK_LOADS_TABLE_OFFSET):
+            patch.write_token(APTokenTypes.WRITE, offset, bytes([0xFF]))
 
     # --- Random dialog text variants ---
     # tools/build_text_variants.py bundles all compiled RLE blobs from
