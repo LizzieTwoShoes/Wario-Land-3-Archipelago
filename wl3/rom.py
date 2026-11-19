@@ -1635,7 +1635,12 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
                 "group_val_mul": shared_level_val_mul,
             })
 
-    if world.options.overworld_bg_palette_shuffle:
+    # Overworld Palette Shuffle: one choice per map side (north, west, south,
+    # east): vanilla, full_shuffle or a season
+    from .options import overworld_palette_sides
+    ow_sides = overworld_palette_sides(world.options.overworld_bg_palette_shuffle, world.random)
+    ow_all_full = all(v == "full_shuffle" for v in ow_sides)
+    if "full_shuffle" in ow_sides:
         # All overworld palettes share ONE hue rotation so adjacent terrain
         # types (mountain / ground / grass / etc — each in its own palette
         # entry) stay thematically related instead of rotating independently
@@ -1655,6 +1660,15 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
         sorted_entries = sorted(OVERWORLD_BG_PALETTES, key=lambda e: e[0])
         for i, (offset, length, _group) in enumerate(sorted_entries):
             if offset in OW_OBJ_PALETTE_OFFSETS:
+                continue
+            # a map side's own palettes (six 40-palette blocks from Pals_84000:
+            # the four sides, then North's and West's all-crayons versions)
+            # follow that side's choice; everything else on the overworld is
+            # only shuffled when all four sides are
+            if 0x84000 <= offset < 0x84000 + 6 * 0x140:
+                if ow_sides[[0, 1, 2, 3, 0, 1][(offset - 0x84000) // 0x140]] != "full_shuffle":
+                    continue
+            elif not ow_all_full:
                 continue
             if i + 1 < len(sorted_entries):
                 next_off = sorted_entries[i + 1][0]
@@ -1680,7 +1694,7 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
         # (Colossal Hole, Warped Void, East Crater, Forest of Fear),
         # forcing every high-level variant to fail its treasure check.
         TITLE_PALETTE_OFFSETS = [0x536a, 0x53aa, 0x53ea, 0x542a]
-        for offset in TITLE_PALETTE_OFFSETS:
+        for offset in (TITLE_PALETTE_OFFSETS if ow_all_full else ()):
             palette_params["overworld_bg"].append({
                 "offset": offset,
                 "length": 64,
@@ -1796,6 +1810,14 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
     # 0 = vanilla, 1 = reveal hidden blocks, 2 = reveal + tint always-colour-coin blocks
     patch.write_token(APTokenTypes.WRITE, HIDDEN_PASSAGES_REVEALED_OFFSET,
                       bytes([int(world.options.hidden_passages_revealed)]))
+
+    # Overworld Palette Shuffle, seasons — write each season's colours over
+    # its map side's palettes (only the colours it changes; see
+    # tools/build_ow_seasons.py).
+    from .ow_season_data import OW_SEASON_BLOCK_SIDE, OW_SEASON_PATCHES
+    for block, side in enumerate(OW_SEASON_BLOCK_SIDE):
+        for offset, data in OW_SEASON_PATCHES.get(ow_sides[side], {}).get(block, ()):
+            patch.write_token(APTokenTypes.WRITE, offset, data)
 
     # Locked Doors off — end every door table at its first row: no door is
     # locked and no padlock, plaque or signpost is drawn.
