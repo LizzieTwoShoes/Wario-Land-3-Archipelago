@@ -230,7 +230,7 @@ COIN_BLOCK_SLOTS_PER_LEVEL = 8       # matches ROM wColourCoinBlockFlags bit cou
 DOOR_SIGN_BASE_LOC_ID = 7_771_100   # AP loc ID = DOOR_SIGN_BASE_LOC_ID + door index
 DOOR_FLAG_BYTES = 17                # 136 doors, one bit each (ROM DOOR_FLAG_BYTES)
 KEY_BASE_ITEM_ID = BASE_ITEM_ID + 300  # 7_770_300
-KEYRING_BASE_ITEM_ID = BASE_ITEM_ID + 700  # 7_770_700 (one per level, owlevel-1 offset)
+KEYRING_BASE_ITEM_ID = BASE_ITEM_ID + 800  # 7_770_800; clear of the door keys (600-735) (one per level, owlevel-1 offset)
 ROOM_KEY_BASE_ITEM_ID = BASE_ITEM_ID + 600  # Room-key items (proof of concept)
 
 # Item name categories for GolfParHints. Matched against the item name in
@@ -1628,8 +1628,8 @@ class WL3Client(BizHawkClient):
         data = ITEM_TABLE.get(info["item"])
         if data is not None:
             first_tid = data.tier_ids[0] if data.tier_ids else None
-            if isinstance(first_tid, int) and 0 <= first_tid <= 0x65:
-                tid = first_tid
+            if isinstance(first_tid, int) and (0 <= first_tid <= 0x65 or first_tid == 0x74):
+                tid = first_tid   # a treasure, or the door key icon
         self._enqueue_item_popup(tid)
 
     def _trigger_item_popup_for_received(self, ap_id: int) -> None:
@@ -1659,8 +1659,8 @@ class WL3Client(BizHawkClient):
     }
     _KEY_AP_ID_MIN  = 7_770_300      # KEY_BASE_ITEM_ID
     _KEY_AP_ID_MAX  = 7_770_399      # 100 keys (25 levels × 4 colors)
-    _KEYRING_AP_ID_MIN = 7_770_700   # KEYRING_BASE_ITEM_ID
-    _KEYRING_AP_ID_MAX = 7_770_724   # 25 keyrings
+    _KEYRING_AP_ID_MIN = 7_770_800   # KEYRING_BASE_ITEM_ID
+    _KEYRING_AP_ID_MAX = 7_770_824   # 25 keyrings
 
     def _resolve_popup_tid(self, ap_id: int) -> int:
         """Map an AP item id → TreasureGfx index for the popup sprite.

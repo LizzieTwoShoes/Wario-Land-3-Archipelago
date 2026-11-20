@@ -1455,6 +1455,11 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
             elif item.name in KEYRING_ITEM_TABLE:
                 # Keyrings aren't in ITEM_TABLE; use the keyring sprite.
                 shop_slot_items[slot] = KEYRING_TREASURE_ID
+            elif item.code is not None and 7_770_600 <= item.code < 7_770_736:  # a door key (ROOM_KEY_BASE_ITEM_ID + door index)
+                # Door keys keep the gem in the shop: the shop slot's id is
+                # also what a purchase grants, and the door key icon ($74)
+                # is display-only.
+                shop_slot_items[slot] = 0x4E
             else:
                 item_data = ITEM_TABLE.get(item.name)
                 if item_data is not None:
