@@ -850,7 +850,7 @@ DOOR_RULES: dict = {
     "The Peaceful Village - Door F Sign":     _c(_has("N2 - Door D Key"), can_jump_high),
     # B room is also reachable from the roof via pipe F (Flute / high jump)
     "The Peaceful Village - Red Key":         _o(_has("N2 - Door B Key"), _has("Flute"), can_jump_high),
-    "The Peaceful Village - Coin Block 3":    _o(_has("N2 - Door B Key"), _has("Flute"), can_jump_high),
+    "The Peaceful Village - Coin Block 2":    _o(_has("N2 - Door B Key"), _has("Flute"), can_jump_high),
     "The Peaceful Village - Big Coin 5":      _o(_has("N2 - Door B Key"), _has("Flute"), can_jump_high),
     "The Peaceful Village - Grey Chest":      _has("N2 - Door C Key"),
     "The Peaceful Village - Red Chest":       _c(_has("N2 - Door E Key"), can_jump_high),
@@ -1125,7 +1125,7 @@ DOOR_RULES: dict = {
     # red chest room (coin 8); C -> the green chest room (coin 6); D (past
     # the falling blocks) -> the blue chest room (blue key, coin 7).
     "The Colossal Hole - Red Key":              _has("E4 - Door D Key"),
-    "The Colossal Hole - Coin Block 1":       _has("E4 - Door D Key"),
+    "The Colossal Hole - Coin Block 2":       _has("E4 - Door D Key"),
     "The Colossal Hole - Red Chest":            _has("E4 - Door C Key"),
     "The Colossal Hole - Big Coin 8":           _has("E4 - Door C Key"),
     "The Colossal Hole - Green Chest":          _has("E4 - Door A Key"),
