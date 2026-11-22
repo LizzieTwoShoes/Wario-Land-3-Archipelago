@@ -61,6 +61,7 @@ from .options import (WL3Options, KeyShuffle, CombinedItems, BossDefeats,
 from .regions import create_regions
 from .rom import WL3ProcedurePatch, write_tokens, KEY_COLOR_PALS, OBPAL_TREASURE_PURPLE
 from .rules import MUSIC_BOXES, set_rules
+from .tracker_maps import MAP_PAGE_GROUPS, OVERWORLD_MAP_INDEX
 from . import client as _client  # noqa: F401 — registers WL3Client with AutoBizHawkClientRegister
 
 
@@ -220,10 +221,30 @@ class WL3Settings(ap_settings.Group):
         description = "Wario Land 3 ROM File"
         md5s      = []
 
+    class UTPackPath(ap_settings.FilePath):
+        """Level map pack (WL3AP.zip from tools/build_tracker_pack.py) for
+        Universal Tracker's map tab. Empty: asked for the first time the
+        tracker opens; cancel that and no map tab is shown."""
+        required = False
+        ut_dialog_name = "Select the Wario Land 3 map pack (WL3AP.zip)"
+
     rom_file:  RomFile = RomFile(RomFile.copy_to)
+    ut_pack_path: UTPackPath | str = UTPackPath()
     # Auto-launches BizHawk using bizhawkclient_options.emuhawk_path with the connector script.
     # Set to a custom string command to override, or false to disable.
     rom_start: bool = True
+
+
+def _tracker_map_index(data: Any) -> int:
+    """Universal Tracker auto-tabbing: the client's published level (1-25;
+    0 outside a level, 26 the Golf Building) -> its map's place in maps.json
+    (the levels in order, then the overworld). -1 keeps the tab that's open."""
+    if isinstance(data, int):
+        if 1 <= data <= 25:
+            return data - 1
+        if data == 0:
+            return OVERWORLD_MAP_INDEX
+    return -1
 
 
 class WL3World(World):
@@ -234,6 +255,34 @@ class WL3World(World):
     topology_present     = True
     web                  = WL3WebWorld()
     settings:            ClassVar[WL3Settings]
+
+    # Universal Tracker rebuilds this world from the seed's slot data alone
+    # (generate_early reads it back), so it needs no YAML and always tracks
+    # with the options the seed was made with.
+    ut_can_gen_without_yaml = True
+
+    @staticmethod
+    def interpret_slot_data(slot_data: Dict[str, Any]) -> Dict[str, Any]:
+        return slot_data
+
+    def _tracker_world(self) -> Dict[str, Any]:
+        """Universal Tracker's map tab: the level maps with every check at
+        its spot, and the overworld. The maps are renders of the game's own
+        art, so they aren't in the apworld: the player points the
+        ut_pack_path setting at the pack once. This is set per seed (on the
+        world, not the class: UT falls back to the world when the class has
+        none) because the pack holds two sets of level maps, with and without
+        padlocks on the locked doors."""
+        return {
+            "external_pack_key":  "ut_pack_path",
+            "map_page_maps":      "maps/maps_locked.json" if self.options.locked_doors else "maps/maps.json",
+            "map_page_locations": "locations/locations.json",
+            "map_page_groups":    MAP_PAGE_GROUPS,
+            # auto-tabbing: the game client publishes the level Wario is in
+            # (client.py _publish_current_level) under this data storage key
+            "map_page_setting_key": "wl3_current_level_{player}",
+            "map_page_index":       _tracker_map_index,
+        }
 
     item_name_to_id      = {
         **{name: data.ap_id for name, data in ITEM_TABLE.items()},
@@ -287,6 +336,18 @@ class WL3World(World):
         # because we may keep duplicates.
         self._local_filler_items: List[WL3Item] = []
 
+        # Universal Tracker: take the options that shape the logic from the
+        # seed's slot data (logic_settings; "door_signs" is Locked Doors in
+        # seeds made before it was listed there).
+        ut_slot_data = getattr(self.multiworld, "re_gen_passthrough", {}).get(self.game)
+        ut_logic = (ut_slot_data or {}).get("logic") or {}
+        for name, value in (ut_logic.get("options") or {}).items():
+            if hasattr(self.options, name):
+                getattr(self.options, name).value = value
+        if ut_slot_data and "locked_doors" not in (ut_logic.get("options") or {}):
+            self.options.locked_doors.value = int(bool(ut_slot_data.get("door_signs", False)))
+        self.tracker_world = self._tracker_world()
+
         # Pick which levels get Keyring treatment. If keyring_count > 0, force
         # key_shuffle to Full so the non-keyringed levels' keys are still in
         # the pool and shuffled.
@@ -298,6 +359,8 @@ class WL3World(World):
             level_names = [data.level_name for data in KEYRING_ITEM_TABLE.values()]
             n = min(count, len(level_names))
             self.keyringed_level_names = set(self.random.sample(level_names, n))
+        if "keyringed_level_names" in ut_logic:
+            self.keyringed_level_names = set(ut_logic["keyringed_level_names"])
 
         # Enemizer can drop form-dependent enemies (Snakes need Flute,
         # Webbers need a charge form, etc.) into rooms outside their
@@ -1260,7 +1323,7 @@ class WL3World(World):
     # rebuilds this seed's rules from them (slot_data "logic", and logic.json
     # in the patch for the offline tool).
     LOGIC_OPTION_NAMES = ("combined_items", "difficulty", "minor_glitches", "enemizer", "key_shuffle",
-                          "bigcoinsanity", "coin_blocksanity", "boss_defeats", "shopsanity",
+                          "bigcoinsanity", "coin_blocksanity", "boss_defeats", "shopsanity", "locked_doors",
                           "victory_condition", "bosses_required", "music_boxes_required")
 
     def logic_settings(self) -> Dict[str, Any]:

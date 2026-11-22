@@ -15,7 +15,7 @@ import time
 from typing import TYPE_CHECKING, Optional
 
 from NetUtils import ClientStatus
-from worlds._bizhawk import read, write, RequestFailedError
+from worlds._bizhawk import read, write, guarded_write, RequestFailedError
 from worlds._bizhawk.client import BizHawkClient
 
 if TYPE_CHECKING:
@@ -1388,6 +1388,9 @@ class WL3Client(BizHawkClient):
 
         # ---- Update opened-chest bitmask in WRAM ----
         await self._update_opened_chests(ctx)
+
+        # ---- Same for keys, coins, coin blocks, door signs and shop slots ----
+        await self._update_collected_flags(ctx)
 
         # ---- Re-sync transform unlock bits ----
         # WRAM gets cleared when the player goes to title and reloads, wiping
@@ -2953,7 +2956,7 @@ class WL3Client(BizHawkClient):
         try:
             data = await read(ctx.bizhawk_ctx, [
                 (0xC09B, 1, "System Bus"),   # wState
-                (0xCA0B, 1, "System Bus"),   # wLevel  (in-level byte)
+                (ADDR_LEVEL, 1, "System Bus"),   # wLevel  (in-level byte)
             ])
         except RequestFailedError:
             return
@@ -3193,6 +3196,58 @@ class WL3Client(BizHawkClient):
                     await write(ctx.bizhawk_ctx, [(ADDR_OPENED_CHESTS_WRAM, merged, "WRAM")])
         except RequestFailedError:
             pass
+
+    async def _update_collected_flags(self, ctx: "BizHawkClientContext") -> None:
+        """Mark in the game every key, musical coin, coin block, door sign and
+        shop slot the SERVER has as checked (another player's !collect, a
+        !release, a co-op partner), as _update_opened_chests does for chests.
+
+        The game hides a key or coin whose flag is set, shows a shop slot as
+        sold, and treats a sign as read before (no second grant). Boss defeats
+        are left alone: that flag is the fight's outcome, not just a check.
+
+        Only the server's own record is used (ctx.checked_locations), and the
+        ids go into _checked_locs BEFORE the flags are written, so the pickup
+        detection above sees them as known: no message, popup or local grant.
+
+        Each changed byte is written with a guard on the value just read, in
+        the same emulator request, so a bit the game set in between (a coin
+        picked up this frame) is never overwritten; a failed guard is retried
+        on the next poll.
+        """
+        server_checked = set(getattr(ctx, "checked_locations", None) or set())
+        if not server_checked or not self._seeded_from_wram:
+            return
+        # (address, bytes, base location id, bits used per byte)
+        tables = (
+            (ADDR_LEVEL_KEYS_WRAM, 25, KEY_BASE_LOC_ID, 4),
+            (ADDR_COIN_FLAGS_WRAM, 25, COIN_BASE_LOC_ID, COINS_PER_LEVEL),
+            (ADDR_COLOUR_COIN_BLOCK_FLAGS_WRAM, 25, COIN_BLOCK_BASE_LOC_ID, COIN_BLOCK_SLOTS_PER_LEVEL),
+            (ADDR_DOOR_SIGN_FLAGS_WRAM, DOOR_FLAG_BYTES, DOOR_SIGN_BASE_LOC_ID, 8),
+            (ADDR_SHOP_SLOTS_BOUGHT_WRAM, 2, SHOP_BASE_LOC_ID, 8),
+        )
+        for addr, size, base, bits in tables:
+            want = bytearray(size)
+            known = set()
+            for loc_id in server_checked:
+                idx = loc_id - base
+                if 0 <= idx < size * bits:
+                    want[idx // bits] |= 1 << (idx % bits)
+                    known.add(loc_id)
+            if not known:
+                continue
+            self._checked_locs |= known
+            try:
+                cur = (await read(ctx.bizhawk_ctx, [(addr, size, "WRAM")]))[0]
+                for i in range(size):
+                    merged = cur[i] | want[i]
+                    if merged != cur[i]:
+                        await guarded_write(
+                            ctx.bizhawk_ctx,
+                            [(addr + i, bytes([merged]), "WRAM")],
+                            [(addr + i, bytes([cur[i]]), "WRAM")])
+            except RequestFailedError:
+                return
 
     async def _update_level_keys(self, ctx: "BizHawkClientContext") -> None:
         """Write wLevelKeys (visited slots) and wKeyInventory (held keys) each poll.
