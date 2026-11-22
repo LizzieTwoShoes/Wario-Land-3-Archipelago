@@ -192,11 +192,59 @@ class LevelBGPaletteShuffle(Toggle):
     default = 0
 
 
-class OverworldBGPaletteShuffle(Toggle):
-    """Randomize the title menu and overworld map background palettes. 
-    Does NOT affect key portrait colors."""
-    display_name = "Overworld BG Palette Shuffle"
-    default = 0
+OW_PALETTE_MAPS = ("north", "west", "south", "east")
+OW_PALETTE_SEASONS = ("spring", "summer", "fall", "winter")
+OW_PALETTE_CHOICES = ("vanilla", "full_shuffle") + OW_PALETTE_SEASONS
+
+
+class OverworldBGPaletteShuffle(OptionDict):
+    """The overworld map's colours, chosen per map (north, west, south, east).
+    Each map takes one of:
+      vanilla: the game's own colours.
+      full_shuffle: random colours.
+      spring: green fields, rose blossom, pink water.
+      summer: sand, a yellow mountain, turquoise water.
+      fall: burnt orange fields and crimson trees.
+      winter: snow, frosted trees, icy water.
+      random_season: one of the four seasons, picked per seed.
+    Seasons cover the map by day and by night. The title menu is only
+    recoloured when all four maps are full_shuffle.
+    Does NOT affect key portrait colors.
+    (Example: north: spring, west: summer, south: fall, east: winter)
+    """
+    display_name = "Overworld Palette Shuffle"
+    valid_keys = frozenset(OW_PALETTE_MAPS)
+    default = {"north": "vanilla", "west": "vanilla", "south": "vanilla", "east": "vanilla"}
+
+    @classmethod
+    def from_any(cls, data):
+        # one value for every map: the old on/off toggle (true = full_shuffle),
+        # a single choice such as "winter", or "all" (a different season each)
+        if not isinstance(data, dict):
+            text = str(data).strip().lower().replace(" ", "_")
+            text = {"true": "full_shuffle", "1": "full_shuffle", "false": "vanilla", "0": "vanilla"}.get(text, text)
+            data = {name: text for name in OW_PALETTE_MAPS}
+        return super().from_any(data)
+
+
+def overworld_palette_sides(option, random):
+    """[north, west, south, east] -> one of OW_PALETTE_CHOICES each, from an
+    OverworldBGPaletteShuffle value. Maps left out are vanilla."""
+    raw = [str((option.value or {}).get(name, "vanilla")).strip().lower().replace(" ", "_")
+           for name in OW_PALETTE_MAPS]
+    if all(v == "all" for v in raw):
+        seasons = list(OW_PALETTE_SEASONS)
+        random.shuffle(seasons)
+        return seasons
+    out = []
+    for name, v in zip(OW_PALETTE_MAPS, raw):
+        if v in ("random_season", "all"):
+            v = random.choice(OW_PALETTE_SEASONS)
+        if v not in OW_PALETTE_CHOICES:
+            raise ValueError(f"Overworld Palette Shuffle: {name}: '{v}' is not one of "
+                             f"{', '.join(OW_PALETTE_CHOICES)}, random_season")
+        out.append(v)
+    return out
 
 
 class WarioPaletteShuffle(Choice):
@@ -329,6 +377,16 @@ class CoinBlocksanity(Toggle):
     option highlights. Breaking one still gives the normal coins; the AP
     check fires separately."""
     display_name = "Coin Blocksanity"
+    default = 0
+
+
+class LockedDoors(Toggle):
+    """Adds 117 "Door Keys" to the pool. The doors will now show a locked
+    door graphic on them, show a plaque with their corresponding letter above
+    them, and a sign beside them. Reading the sign by pressing "UP" will
+    grant you an item (a message will tell you what the sign has granted
+    you)."""
+    display_name = "Locked Doors"
     default = 0
 
 
@@ -523,6 +581,7 @@ class WL3Options(PerGameCommonOptions):
     in_game_messages:             InGameMessages
     bigcoinsanity:                BigCoinsanity
     coin_blocksanity:             CoinBlocksanity
+    locked_doors:                 LockedDoors
     boss_defeats:                 BossDefeats
     shopsanity:                   Shopsanity
     shop_price_tier:              ShopPriceTier

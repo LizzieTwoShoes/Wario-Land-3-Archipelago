@@ -40,6 +40,7 @@ from .items import (
     TRANSFORM_SACRIFICED_TREASURES,
     TRANSFORM_UNLOCK_ITEMS,
     TRANSFORM_UNLOCK_PROGRESSIVE_COUNTS,
+    ROOM_KEY_BASE_ITEM_ID,
     ROOM_KEY_ITEMS,
     TREASURE_TABLE,
     WL3ItemData,
@@ -60,6 +61,7 @@ from .options import (WL3Options, KeyShuffle, CombinedItems, BossDefeats,
 from .regions import create_regions
 from .rom import WL3ProcedurePatch, write_tokens, KEY_COLOR_PALS, OBPAL_TREASURE_PURPLE
 from .rules import MUSIC_BOXES, set_rules
+from .tracker_maps import MAP_PAGE_GROUPS, OVERWORLD_MAP_INDEX
 from . import client as _client  # noqa: F401 — registers WL3Client with AutoBizHawkClientRegister
 
 
@@ -219,10 +221,30 @@ class WL3Settings(ap_settings.Group):
         description = "Wario Land 3 ROM File"
         md5s      = []
 
+    class UTPackPath(ap_settings.FilePath):
+        """Level map pack (WL3AP.zip from tools/build_tracker_pack.py) for
+        Universal Tracker's map tab. Empty: asked for the first time the
+        tracker opens; cancel that and no map tab is shown."""
+        required = False
+        ut_dialog_name = "Select the Wario Land 3 map pack (WL3AP.zip)"
+
     rom_file:  RomFile = RomFile(RomFile.copy_to)
+    ut_pack_path: UTPackPath | str = UTPackPath()
     # Auto-launches BizHawk using bizhawkclient_options.emuhawk_path with the connector script.
     # Set to a custom string command to override, or false to disable.
     rom_start: bool = True
+
+
+def _tracker_map_index(data: Any) -> int:
+    """Universal Tracker auto-tabbing: the client's published level (1-25;
+    0 outside a level, 26 the Golf Building) -> its map's place in maps.json
+    (the levels in order, then the overworld). -1 keeps the tab that's open."""
+    if isinstance(data, int):
+        if 1 <= data <= 25:
+            return data - 1
+        if data == 0:
+            return OVERWORLD_MAP_INDEX
+    return -1
 
 
 class WL3World(World):
@@ -233,6 +255,34 @@ class WL3World(World):
     topology_present     = True
     web                  = WL3WebWorld()
     settings:            ClassVar[WL3Settings]
+
+    # Universal Tracker rebuilds this world from the seed's slot data alone
+    # (generate_early reads it back), so it needs no YAML and always tracks
+    # with the options the seed was made with.
+    ut_can_gen_without_yaml = True
+
+    @staticmethod
+    def interpret_slot_data(slot_data: Dict[str, Any]) -> Dict[str, Any]:
+        return slot_data
+
+    def _tracker_world(self) -> Dict[str, Any]:
+        """Universal Tracker's map tab: the level maps with every check at
+        its spot, and the overworld. The maps are renders of the game's own
+        art, so they aren't in the apworld: the player points the
+        ut_pack_path setting at the pack once. This is set per seed (on the
+        world, not the class: UT falls back to the world when the class has
+        none) because the pack holds two sets of level maps, with and without
+        padlocks on the locked doors."""
+        return {
+            "external_pack_key":  "ut_pack_path",
+            "map_page_maps":      "maps/maps_locked.json" if self.options.locked_doors else "maps/maps.json",
+            "map_page_locations": "locations/locations.json",
+            "map_page_groups":    MAP_PAGE_GROUPS,
+            # auto-tabbing: the game client publishes the level Wario is in
+            # (client.py _publish_current_level) under this data storage key
+            "map_page_setting_key": "wl3_current_level_{player}",
+            "map_page_index":       _tracker_map_index,
+        }
 
     item_name_to_id      = {
         **{name: data.ap_id for name, data in ITEM_TABLE.items()},
@@ -286,6 +336,18 @@ class WL3World(World):
         # because we may keep duplicates.
         self._local_filler_items: List[WL3Item] = []
 
+        # Universal Tracker: take the options that shape the logic from the
+        # seed's slot data (logic_settings; "door_signs" is Locked Doors in
+        # seeds made before it was listed there).
+        ut_slot_data = getattr(self.multiworld, "re_gen_passthrough", {}).get(self.game)
+        ut_logic = (ut_slot_data or {}).get("logic") or {}
+        for name, value in (ut_logic.get("options") or {}).items():
+            if hasattr(self.options, name):
+                getattr(self.options, name).value = value
+        if ut_slot_data and "locked_doors" not in (ut_logic.get("options") or {}):
+            self.options.locked_doors.value = int(bool(ut_slot_data.get("door_signs", False)))
+        self.tracker_world = self._tracker_world()
+
         # Pick which levels get Keyring treatment. If keyring_count > 0, force
         # key_shuffle to Full so the non-keyringed levels' keys are still in
         # the pool and shuffled.
@@ -297,6 +359,8 @@ class WL3World(World):
             level_names = [data.level_name for data in KEYRING_ITEM_TABLE.values()]
             n = min(count, len(level_names))
             self.keyringed_level_names = set(self.random.sample(level_names, n))
+        if "keyringed_level_names" in ut_logic:
+            self.keyringed_level_names = set(ut_logic["keyringed_level_names"])
 
         # Enemizer can drop form-dependent enemies (Snakes need Flute,
         # Webbers need a charge form, etc.) into rooms outside their
@@ -420,11 +484,17 @@ class WL3World(World):
                 for _ in range(count):
                     items.append(self.create_item(name))
 
-        # Room-key items (proof of concept) — always added, one copy each.
-        # Lands in one of the 100 base chest locations via the normal fill
-        # algorithm, same as any other progression treasure.
-        for name in ROOM_KEY_ITEMS:
-            items.append(self.create_item(name))
+        # Door keys — one copy each, with the Locked Doors option. A door with a signpost
+        # brings its own location (DOOR_SIGN_LOCATION_TABLE), so its key is
+        # added with the signposts below, outside the base 100; any other
+        # door key takes one of the base 100's filler slots.
+        sign_doors = {data.door_index for data in DOOR_SIGN_LOCATION_TABLE.values()}
+        signed_door_keys = [name for name, data in ROOM_KEY_ITEMS.items()
+                            if data.ap_id - ROOM_KEY_BASE_ITEM_ID in sign_doors]
+        locked_doors = bool(self.options.locked_doors)
+        for name in (ROOM_KEY_ITEMS if locked_doors else ()):
+            if name not in signed_door_keys:
+                items.append(self.create_item(name))
 
         # Fill remaining slots to reach 100 using coin bundles. Use the existing
         # bundle distribution tables as the starting point, then top up with 1-coin fillers.
@@ -490,9 +560,13 @@ class WL3World(World):
             for _ in range(44):
                 items.append(self.create_item(self.random.choice(filler_items)))
 
-        # Door signposts: one location per signposted door, one filler each.
-        for _ in range(len(DOOR_SIGN_LOCATION_TABLE)):
-            items.append(self.create_item(self.random.choice(filler_items)))
+        # Door signposts: one location per signposted door, filled by that
+        # door's key (filler if a signpost's door has no key item).
+        if locked_doors:
+            for name in signed_door_keys:
+                items.append(self.create_item(name))
+            for _ in range(len(DOOR_SIGN_LOCATION_TABLE) - len(signed_door_keys)):
+                items.append(self.create_item(self.random.choice(filler_items)))
 
         # Trap replacement: swap a % of filler items for random trap items.
         # Runs after key shuffle so keyring-padding fillers are also candidates.
@@ -1105,7 +1179,7 @@ class WL3World(World):
             return lines
 
         data = bytearray([space] * (MAX_LOCKED_DOORS * lines_per * cols))
-        for loc_name, loc_data in DOOR_SIGN_LOCATION_TABLE.items():
+        for loc_name, loc_data in (DOOR_SIGN_LOCATION_TABLE.items() if self.options.locked_doors else ()):
             item = self.multiworld.get_location(loc_name, self.player).item
             if item is None:
                 continue
@@ -1127,7 +1201,7 @@ class WL3World(World):
         from .items import SIDE_TABLE_CODES
         sign_items = [0xFF] * MAX_LOCKED_DOORS
         trap_table = [0] * MAX_LOCKED_DOORS
-        for loc_name, loc_data in DOOR_SIGN_LOCATION_TABLE.items():
+        for loc_name, loc_data in (DOOR_SIGN_LOCATION_TABLE.items() if self.options.locked_doors else ()):
             item = self.multiworld.get_location(loc_name, self.player).item
             sign_items[loc_data.door_index] = self._side_item_display(item)[0]
             if item is not None and item.player == self.player:
@@ -1245,6 +1319,20 @@ class WL3World(World):
     # Slot data
     # ------------------------------------------------------------------
 
+    # Options set_rules / create_regions read: the debug tools' Logic page
+    # rebuilds this seed's rules from them (slot_data "logic", and logic.json
+    # in the patch for the offline tool).
+    LOGIC_OPTION_NAMES = ("combined_items", "difficulty", "minor_glitches", "enemizer", "key_shuffle",
+                          "bigcoinsanity", "coin_blocksanity", "boss_defeats", "shopsanity", "locked_doors",
+                          "victory_condition", "bosses_required", "music_boxes_required")
+
+    def logic_settings(self) -> Dict[str, Any]:
+        return {
+            "options": {name: int(getattr(self.options, name).value) for name in self.LOGIC_OPTION_NAMES},
+            "entrance_map": list(getattr(self, "entrance_map", range(26))),
+            "keyringed_level_names": sorted(getattr(self, "keyringed_level_names", set())),
+        }
+
     def fill_slot_data(self) -> Dict[str, Any]:
         from BaseClasses import ItemClassification
         from .items import ITEM_TABLE, KEY_ITEM_TABLE, KEYRING_ITEM_TABLE
@@ -1264,7 +1352,8 @@ class WL3World(World):
             all_locs = {**all_locs, **SHOP_LOCATION_TABLE}
         if self.options.coin_blocksanity:
             all_locs = {**all_locs, **COIN_BLOCK_LOCATION_TABLE}
-        all_locs = {**all_locs, **DOOR_SIGN_LOCATION_TABLE}
+        if self.options.locked_doors:
+            all_locs = {**all_locs, **DOOR_SIGN_LOCATION_TABLE}
         for loc_name, loc_data in all_locs.items():
             loc = self.multiworld.get_location(loc_name, self.player)
             if loc.item is not None:
@@ -1302,10 +1391,11 @@ class WL3World(World):
             "in_game_messages":        int(self.options.in_game_messages),
             "boss_defeats":            bool(self.options.boss_defeats),
             "coin_blocksanity":        bool(self.options.coin_blocksanity),
-            "door_signs":              True,  # client watches wDoorSignFlags
+            "door_signs":              bool(self.options.locked_doors),  # client watches wDoorSignFlags
             "shopsanity":              bool(self.options.shopsanity),
             "shop_price_tier":         int(self.options.shop_price_tier),
             "shop_prices":             list(self.shop_prices),
             "progression_item_names":  progression_names,
             "loc_items":               loc_items,
+            "logic":                   self.logic_settings(),
         }

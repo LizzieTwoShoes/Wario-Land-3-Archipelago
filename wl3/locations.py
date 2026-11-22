@@ -323,8 +323,135 @@ class WL3DoorSignLocationData(NamedTuple):
 # (door index, owlevel, door letter) — must match the ROM's read_sign rows.
 _DOOR_SIGNS = [
     (0, 1, "A"),  # DOOR_N1_A
-    (2, 1, "B"),  # DOOR_N1_B
-    (3, 1, "C"),  # DOOR_N1_C
+    (2, 1, "D"),  # DOOR_N1_D
+    (3, 1, "B"),  # DOOR_N1_B
+    (4, 2, "A"),  # DOOR_N2_A
+    (5, 2, "B"),  # DOOR_N2_B
+    (1, 2, "C"),  # DOOR_N2_C
+    (6, 2, "E"),  # DOOR_N2_E
+    (8, 2, "D"),  # DOOR_N2_D
+    (7, 2, "F"),  # DOOR_N2_F
+    (9, 3, "A"),  # DOOR_N3_A
+    (10, 3, "B"),  # DOOR_N3_B
+    (11, 4, "F"),  # DOOR_N4_F
+    (12, 4, "G"),  # DOOR_N4_G
+    (13, 4, "A"),  # DOOR_N4_A
+    (14, 4, "B"),  # DOOR_N4_B
+    (15, 4, "C"),  # DOOR_N4_C
+    (16, 4, "D"),  # DOOR_N4_D
+    (17, 4, "E"),  # DOOR_N4_E
+    (18, 5, "A"),  # DOOR_N5_A
+    (19, 5, "B"),  # DOOR_N5_B
+    (20, 5, "C"),  # DOOR_N5_C
+    (21, 5, "H"),  # DOOR_N5_H
+    (22, 5, "F"),  # DOOR_N5_F
+    (23, 5, "I"),  # DOOR_N5_I
+    (24, 5, "D"),  # DOOR_N5_D (underwater)
+    (25, 5, "E"),  # DOOR_N5_E (underwater)
+    (26, 6, "B"),  # DOOR_N6_B (underwater)
+    (27, 6, "C"),  # DOOR_N6_C (underwater, Scepter variants)
+    (28, 6, "A"),  # DOOR_N6_A
+    (29, 6, "D"),  # DOOR_N6_D (night-vision door while dark)
+    (30, 7, "C"),  # DOOR_W1_C
+    (31, 7, "D"),  # DOOR_W1_D
+    (32, 7, "B"),  # DOOR_W1_B
+    (33, 7, "A"),  # DOOR_W1_A
+    (34, 7, "I"),  # DOOR_W1_I
+    (35, 7, "F"),  # DOOR_W1_F
+    (36, 7, "E"),  # DOOR_W1_E
+    (37, 7, "H"),  # DOOR_W1_H
+    (38, 7, "G"),  # DOOR_W1_G
+    (39, 8, "E"),  # DOOR_W2_E
+    (40, 8, "A"),  # DOOR_W2_A
+    (41, 8, "C"),  # DOOR_W2_C
+    (42, 8, "D"),  # DOOR_W2_D
+    (43, 8, "G"),  # DOOR_W2_G
+    (44, 8, "B"),  # DOOR_W2_B
+    (45, 9, "C"),  # DOOR_W3_C
+    (46, 9, "A"),  # DOOR_W3_A
+    (47, 9, "E"),  # DOOR_W3_E
+    (48, 10, "A"),  # DOOR_W4_A
+    (49, 10, "B"),  # DOOR_W4_B
+    (50, 10, "D"),  # DOOR_W4_D
+    (51, 10, "G"),  # DOOR_W4_G
+    (52, 10, "C"),  # DOOR_W4_C
+    (53, 10, "J"),  # DOOR_W4_J
+    (54, 10, "K"),  # DOOR_W4_K
+    (55, 10, "L"),  # DOOR_W4_L
+    (56, 10, "H"),  # DOOR_W4_H
+    (57, 10, "I"),  # DOOR_W4_I
+    (58, 11, "B"),  # DOOR_W5_B
+    (59, 11, "A"),  # DOOR_W5_A
+    (60, 11, "G"),  # DOOR_W5_G
+    (61, 11, "F"),  # DOOR_W5_F
+    (62, 11, "E"),  # DOOR_W5_E
+    (63, 11, "D"),  # DOOR_W5_D
+    (64, 11, "C"),  # DOOR_W5_C
+    (65, 12, "B"),  # DOOR_W6_B
+    (66, 12, "A"),  # DOOR_W6_A
+    (67, 12, "C"),  # DOOR_W6_C
+    (68, 13, "A"),  # DOOR_S1_A
+    (69, 13, "B"),  # DOOR_S1_B
+    (70, 13, "C"),  # DOOR_S1_C
+    (71, 13, "D"),  # DOOR_S1_D
+    (72, 13, "E"),  # DOOR_S1_E
+    (73, 13, "G"),  # DOOR_S1_G
+    (74, 13, "F"),  # DOOR_S1_F
+    (75, 13, "I"),  # DOOR_S1_I
+    (76, 13, "H"),  # DOOR_S1_H
+    (77, 14, "E"),  # DOOR_S2_E
+    (78, 14, "C"),  # DOOR_S2_C
+    (79, 14, "D"),  # DOOR_S2_D
+    (80, 14, "B"),  # DOOR_S2_B
+    (81, 14, "A"),  # DOOR_S2_A
+    (82, 15, "B"),  # DOOR_S3_B
+    (83, 17, "A"),  # DOOR_S5_A
+    (84, 17, "C"),  # DOOR_S5_C
+    (85, 17, "D"),  # DOOR_S5_D
+    (86, 17, "B"),  # DOOR_S5_B
+    (87, 18, "A"),  # DOOR_S6_A
+    (88, 18, "B"),  # DOOR_S6_B
+    (89, 18, "F"),  # DOOR_S6_F
+    (90, 18, "D"),  # DOOR_S6_D
+    (91, 18, "C"),  # DOOR_S6_C
+    (92, 19, "A"),  # DOOR_E1_A
+    # 93: DOOR_E1_UNUSED_D dropped (always-open QoL door)
+    (94, 19, "D"),  # DOOR_E1_D
+    (95, 19, "B"),  # DOOR_E1_B
+    (96, 20, "A"),  # DOOR_E2_A
+    (97, 20, "C"),  # DOOR_E2_C
+    (98, 20, "B"),  # DOOR_E2_B
+    (99, 20, "D"),  # DOOR_E2_D
+    (100, 20, "E"),  # DOOR_E2_E
+    (101, 21, "A"),  # DOOR_E3_A
+    (102, 21, "B"),  # DOOR_E3_B
+    (103, 21, "C"),  # DOOR_E3_C
+    (104, 21, "D"),  # DOOR_E3_D
+    (105, 21, "G"),  # DOOR_E3_G
+    (106, 21, "F"),  # DOOR_E3_F
+    (107, 21, "E"),  # DOOR_E3_E
+    (108, 22, "D"),  # DOOR_E4_D
+    (109, 22, "C"),  # DOOR_E4_C
+    (110, 22, "A"),  # DOOR_E4_A
+    (111, 22, "B"),  # DOOR_E4_B
+    (112, 24, "A"),  # DOOR_E6_A
+    (113, 24, "C"),  # DOOR_E6_C
+    (114, 24, "B"),  # DOOR_E6_B
+    (115, 25, "C"),  # DOOR_E7_C
+    (116, 25, "A"),  # DOOR_E7_A
+    (117, 25, "B"),  # DOOR_E7_B
+    # (118, 23, "A"),  # DOOR_E5_A  -- E5 doors off for now (2026-11-18): too many doors and locks for the logic
+    # (119, 23, "O"),  # DOOR_E5_O
+    # (120, 23, "D"),  # DOOR_E5_D
+    # (121, 23, "N"),  # DOOR_E5_N
+    # (122, 23, "C"),  # DOOR_E5_C
+    # (123, 23, "F"),  # DOOR_E5_F
+    # (124, 23, "B"),  # DOOR_E5_B
+    # (125, 23, "K"),  # DOOR_E5_K
+    # (126, 23, "L"),  # DOOR_E5_L
+    # (127, 23, "M"),  # DOOR_E5_M
+    # (128, 23, "J"),  # DOOR_E5_J
+    # (129, 23, "I"),  # DOOR_E5_I
 ]
 
 

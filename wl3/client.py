@@ -15,7 +15,7 @@ import time
 from typing import TYPE_CHECKING, Optional
 
 from NetUtils import ClientStatus
-from worlds._bizhawk import read, write, RequestFailedError
+from worlds._bizhawk import read, write, guarded_write, RequestFailedError
 from worlds._bizhawk.client import BizHawkClient
 
 if TYPE_CHECKING:
@@ -230,7 +230,7 @@ COIN_BLOCK_SLOTS_PER_LEVEL = 8       # matches ROM wColourCoinBlockFlags bit cou
 DOOR_SIGN_BASE_LOC_ID = 7_771_100   # AP loc ID = DOOR_SIGN_BASE_LOC_ID + door index
 DOOR_FLAG_BYTES = 17                # 136 doors, one bit each (ROM DOOR_FLAG_BYTES)
 KEY_BASE_ITEM_ID = BASE_ITEM_ID + 300  # 7_770_300
-KEYRING_BASE_ITEM_ID = BASE_ITEM_ID + 700  # 7_770_700 (one per level, owlevel-1 offset)
+KEYRING_BASE_ITEM_ID = BASE_ITEM_ID + 800  # 7_770_800; clear of the door keys (600-735) (one per level, owlevel-1 offset)
 ROOM_KEY_BASE_ITEM_ID = BASE_ITEM_ID + 600  # Room-key items (proof of concept)
 
 # Item name categories for GolfParHints. Matched against the item name in
@@ -1389,6 +1389,9 @@ class WL3Client(BizHawkClient):
         # ---- Update opened-chest bitmask in WRAM ----
         await self._update_opened_chests(ctx)
 
+        # ---- Same for keys, coins, coin blocks, door signs and shop slots ----
+        await self._update_collected_flags(ctx)
+
         # ---- Re-sync transform unlock bits ----
         # WRAM gets cleared when the player goes to title and reloads, wiping
         # wTransformUnlocks/2. Rebuild the bits from cached_received every tick
@@ -1628,8 +1631,8 @@ class WL3Client(BizHawkClient):
         data = ITEM_TABLE.get(info["item"])
         if data is not None:
             first_tid = data.tier_ids[0] if data.tier_ids else None
-            if isinstance(first_tid, int) and 0 <= first_tid <= 0x65:
-                tid = first_tid
+            if isinstance(first_tid, int) and (0 <= first_tid <= 0x65 or first_tid == 0x74):
+                tid = first_tid   # a treasure, or the door key icon
         self._enqueue_item_popup(tid)
 
     def _trigger_item_popup_for_received(self, ap_id: int) -> None:
@@ -1659,8 +1662,8 @@ class WL3Client(BizHawkClient):
     }
     _KEY_AP_ID_MIN  = 7_770_300      # KEY_BASE_ITEM_ID
     _KEY_AP_ID_MAX  = 7_770_399      # 100 keys (25 levels × 4 colors)
-    _KEYRING_AP_ID_MIN = 7_770_700   # KEYRING_BASE_ITEM_ID
-    _KEYRING_AP_ID_MAX = 7_770_724   # 25 keyrings
+    _KEYRING_AP_ID_MIN = 7_770_800   # KEYRING_BASE_ITEM_ID
+    _KEYRING_AP_ID_MAX = 7_770_824   # 25 keyrings
 
     def _resolve_popup_tid(self, ap_id: int) -> int:
         """Map an AP item id → TreasureGfx index for the popup sprite.
@@ -1693,6 +1696,9 @@ class WL3Client(BizHawkClient):
         # so it's accurate here.
         if self._KEYRING_AP_ID_MIN <= ap_id <= self._KEYRING_AP_ID_MAX:
             return 0x66
+        # Door keys — the locked door's handle (TreasureDoorKeyGfx).
+        if ROOM_KEY_BASE_ITEM_ID <= ap_id < ROOM_KEY_BASE_ITEM_ID + 136:
+            return 0x74
         # Regular treasure / combined item — tier_ids[0] IS the display tid.
         data = ID_TO_ITEM.get(ap_id)
         if data and data.tier_ids:
@@ -2950,7 +2956,7 @@ class WL3Client(BizHawkClient):
         try:
             data = await read(ctx.bizhawk_ctx, [
                 (0xC09B, 1, "System Bus"),   # wState
-                (0xCA0B, 1, "System Bus"),   # wLevel  (in-level byte)
+                (ADDR_LEVEL, 1, "System Bus"),   # wLevel  (in-level byte)
             ])
         except RequestFailedError:
             return
@@ -3190,6 +3196,58 @@ class WL3Client(BizHawkClient):
                     await write(ctx.bizhawk_ctx, [(ADDR_OPENED_CHESTS_WRAM, merged, "WRAM")])
         except RequestFailedError:
             pass
+
+    async def _update_collected_flags(self, ctx: "BizHawkClientContext") -> None:
+        """Mark in the game every key, musical coin, coin block, door sign and
+        shop slot the SERVER has as checked (another player's !collect, a
+        !release, a co-op partner), as _update_opened_chests does for chests.
+
+        The game hides a key or coin whose flag is set, shows a shop slot as
+        sold, and treats a sign as read before (no second grant). Boss defeats
+        are left alone: that flag is the fight's outcome, not just a check.
+
+        Only the server's own record is used (ctx.checked_locations), and the
+        ids go into _checked_locs BEFORE the flags are written, so the pickup
+        detection above sees them as known: no message, popup or local grant.
+
+        Each changed byte is written with a guard on the value just read, in
+        the same emulator request, so a bit the game set in between (a coin
+        picked up this frame) is never overwritten; a failed guard is retried
+        on the next poll.
+        """
+        server_checked = set(getattr(ctx, "checked_locations", None) or set())
+        if not server_checked or not self._seeded_from_wram:
+            return
+        # (address, bytes, base location id, bits used per byte)
+        tables = (
+            (ADDR_LEVEL_KEYS_WRAM, 25, KEY_BASE_LOC_ID, 4),
+            (ADDR_COIN_FLAGS_WRAM, 25, COIN_BASE_LOC_ID, COINS_PER_LEVEL),
+            (ADDR_COLOUR_COIN_BLOCK_FLAGS_WRAM, 25, COIN_BLOCK_BASE_LOC_ID, COIN_BLOCK_SLOTS_PER_LEVEL),
+            (ADDR_DOOR_SIGN_FLAGS_WRAM, DOOR_FLAG_BYTES, DOOR_SIGN_BASE_LOC_ID, 8),
+            (ADDR_SHOP_SLOTS_BOUGHT_WRAM, 2, SHOP_BASE_LOC_ID, 8),
+        )
+        for addr, size, base, bits in tables:
+            want = bytearray(size)
+            known = set()
+            for loc_id in server_checked:
+                idx = loc_id - base
+                if 0 <= idx < size * bits:
+                    want[idx // bits] |= 1 << (idx % bits)
+                    known.add(loc_id)
+            if not known:
+                continue
+            self._checked_locs |= known
+            try:
+                cur = (await read(ctx.bizhawk_ctx, [(addr, size, "WRAM")]))[0]
+                for i in range(size):
+                    merged = cur[i] | want[i]
+                    if merged != cur[i]:
+                        await guarded_write(
+                            ctx.bizhawk_ctx,
+                            [(addr + i, bytes([merged]), "WRAM")],
+                            [(addr + i, bytes([cur[i]]), "WRAM")])
+            except RequestFailedError:
+                return
 
     async def _update_level_keys(self, ctx: "BizHawkClientContext") -> None:
         """Write wLevelKeys (visited slots) and wKeyInventory (held keys) each poll.

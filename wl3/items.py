@@ -540,58 +540,649 @@ ROOM_KEY_ITEMS: Dict[str, WL3ItemData] = {
     "N1 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 0,
         classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
     ),
     "N2 - Door C Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 1,
         classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
     ),
-    "N1 - Door B Key": WL3ItemData(
+    "N1 - Door D Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 2,
         classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
     ),
-    "N1 - Door C Key": WL3ItemData(
+    "N1 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 3,
-        classification=ItemClassification.useful,  # gates nothing on its own — see DOOR_RULES
-        tier_ids=[0x4E],  # Red Gem placeholder
+        classification=ItemClassification.progression,  # second way to the red key area (DOOR_ALT_RULES)
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
     ),
     "N2 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 4,
         classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
     ),
     "N2 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 5,
         classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "N2 - Door D Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 6,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
-    ),
-    "N2 - Door J Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 7,
-        classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
     ),
     "N2 - Door E Key": WL3ItemData(
-        ap_id=ROOM_KEY_BASE_ITEM_ID + 8,
-        classification=ItemClassification.useful,  # big room is also reachable via I
-        tier_ids=[0x4E],  # Red Gem placeholder
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 6,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
     ),
-    "N3 - Door H Key": WL3ItemData(
+    "N2 - Door F Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 7,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N2 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 8,
+        classification=ItemClassification.progression,  # big room is also reachable via I
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N3 - Door A Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 9,
         classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
     ),
-    "N3 - Door J Key": WL3ItemData(
+    "N3 - Door B Key": WL3ItemData(
         ap_id=ROOM_KEY_BASE_ITEM_ID + 10,
         classification=ItemClassification.progression,
-        tier_ids=[0x4E],  # Red Gem placeholder
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
     ),
+    "N4 - Door F Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 11,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N4 - Door G Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 12,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N4 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 13,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N4 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 14,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N4 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 15,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N4 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 16,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N4 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 17,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N5 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 18,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N5 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 19,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N5 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 20,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N5 - Door H Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 21,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N5 - Door F Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 22,
+        classification=ItemClassification.progression,  # only leads back up: gates nothing
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N5 - Door I Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 23,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N5 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 24,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N5 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 25,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N6 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 26,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N6 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 27,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N6 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 28,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "N6 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 29,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W1 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 30,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W1 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 31,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W1 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 32,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W1 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 33,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W1 - Door I Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 34,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W1 - Door F Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 35,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W1 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 36,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W1 - Door H Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 37,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W1 - Door G Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 38,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W2 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 39,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W2 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 40,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W2 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 41,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W2 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 42,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W2 - Door G Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 43,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W2 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 44,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W3 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 45,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W3 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 46,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W3 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 47,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W4 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 48,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W4 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 49,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W4 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 50,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W4 - Door G Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 51,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W4 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 52,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W4 - Door J Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 53,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W4 - Door K Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 54,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W4 - Door L Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 55,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W4 - Door H Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 56,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W4 - Door I Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 57,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W5 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 58,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W5 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 59,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W5 - Door G Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 60,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W5 - Door F Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 61,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W5 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 62,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W5 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 63,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W5 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 64,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W6 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 65,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W6 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 66,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "W6 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 67,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S1 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 68,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S1 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 69,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S1 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 70,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S1 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 71,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S1 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 72,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S1 - Door G Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 73,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S1 - Door F Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 74,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S1 - Door I Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 75,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S1 - Door H Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 76,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S2 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 77,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S2 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 78,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S2 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 79,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S2 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 80,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S2 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 81,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S3 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 82,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S5 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 83,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S5 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 84,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S5 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 85,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S5 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 86,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S6 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 87,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S6 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 88,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S6 - Door F Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 89,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S6 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 90,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "S6 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 91,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E1 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 92,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E1 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 94,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E1 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 95,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E2 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 96,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E2 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 97,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E2 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 98,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E2 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 99,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E2 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 100,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E3 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 101,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E3 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 102,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E3 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 103,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E3 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 104,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E3 - Door G Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 105,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E3 - Door F Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 106,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E3 - Door E Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 107,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E4 - Door D Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 108,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E4 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 109,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E4 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 110,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E4 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 111,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E6 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 112,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E6 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 113,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E6 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 114,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E7 - Door C Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 115,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E7 - Door A Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 116,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    "E7 - Door B Key": WL3ItemData(
+        ap_id=ROOM_KEY_BASE_ITEM_ID + 117,
+        classification=ItemClassification.progression,
+        tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    ),
+    # E5 doors off for now (2026-11-18): too many doors and locks for the logic
+    # "E5 - Door A Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 118,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door O Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 119,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door D Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 120,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door N Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 121,
+    #     classification=ItemClassification.useful,  # back into the hub: gates nothing
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door C Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 122,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door F Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 123,
+    #     classification=ItemClassification.useful,  # back into the hub: gates nothing
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door B Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 124,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door K Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 125,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door L Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 126,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door M Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 127,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door J Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 128,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
+    # "E5 - Door I Key": WL3ItemData(
+    #     ap_id=ROOM_KEY_BASE_ITEM_ID + 129,
+    #     classification=ItemClassification.progression,
+    #     tier_ids=[0x74],  # door key icon (TreasureDoorKeyGfx); the Trap*Table code grants the key
+    # ),
 }
 
 # Door keys are granted offline through the same Trap*Table side tables as
@@ -737,7 +1328,10 @@ KEY_ITEM_TABLE: Dict[str, WL3KeyItemData] = _build_key_item_table()
 # AP IDs: BASE_ITEM_ID + 700 + (owlevel - 1)
 # ---------------------------------------------------------------------------
 
-KEYRING_BASE_ITEM_ID = BASE_ITEM_ID + 700  # 7_770_700
+# (was + 700, inside the door keys' range: door keys take BASE + 600 + door
+# index, up to 735, so door 100 shared an id with the first keyring and was
+# named "Out of the Woods Keyring")
+KEYRING_BASE_ITEM_ID = BASE_ITEM_ID + 800  # 7_770_800
 
 
 class WL3KeyringItemData(NamedTuple):

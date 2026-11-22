@@ -65,6 +65,8 @@ TREASURE_ICE_SKATIN_TILE_OFFSET  = 0x099bc0   # TreasureIceSkatinFormGfx — 64 
 TREASURE_FLAT_TILE_OFFSET        = 0x099c00   # TreasureFlatFormGfx      — 64 bytes (4 tiles, 2bpp)
 TREASURE_PUFFY_TILE_OFFSET       = 0x099c40   # TreasurePuffyFormGfx     — 64 bytes (4 tiles, 2bpp)
 TREASURE_ROLL_TILE_OFFSET        = 0x099c80   # TreasureRollFormGfx      — 64 bytes (4 tiles, 2bpp)
+TREASURE_DOOR_KEY_TILE_OFFSET    = 0x099d00   # TreasureDoorKeyGfx       — 64 bytes (4 tiles, 2bpp)
+TREASURE_DOOR_UNLOCK_TILE_OFFSET = 0x099d40   # TreasureDoorUnlockGfx    — 64 bytes (4 tiles, 2bpp)
 
 # Vanilla Form icon extractions. Each entry:
 #   (kind, offset, length, crop_x, crop_y, dest_offset)
@@ -108,9 +110,26 @@ FORM_ICON_FLIPPED_EXTRACTIONS = (
     # motion trail is on the right (matches rolling right visually).
     ("sprite_raw", 0x025000, 2048, 112, 32, TREASURE_ROLL_TILE_OFFSET),
 )
-TREASURE_DUMMY_PAL_OFFSET        = 0x09BC85   # TreasureOBPals[$65] — 1 byte (palette index)
+# Graphics built from the user's vanilla font (RLE, 16 tiles wide) at patch
+# time, so none ship: the signpost box's down arrow (SignFontArrow: 2 1bpp
+# glyphs, see _build_sign_arrow) and the message/key tracker fonts' letters
+# (see _build_vanilla_font_tiles).
+VANILLA_FONT_SOURCE = (0x1f1d5d, 3685)
+SIGN_ARROW_GLYPHS_OFFSET         = 0x052C82   # SignFontArrow
+MSG_FONT_TILES_OFFSET            = 0x027800   # MsgFontTiles — 32 bytes per glyph
+TITLE_SMALL_FONT_OFFSET          = 0x09AC52   # TitleSmallFontGfx — 16 bytes per tile
+CHECKS_EXTRA_TILES_OFFSET        = 0x09AAB2   # ChecksExtraTilesGfx — 16 bytes per tile
+
+# Door key icon: the locked door's handle and keyhole, cut out of the vanilla
+# door tiles (main_tiles38, plain 16-tile-wide sheet) — see _build_door_key_icon.
+DOOR_KEY_ICON_SOURCE = (0x157000, 2048)
+# The "!" bubble's left half: WarioClearGfx (bank $0b, $7000) tile $48 and
+# the one below it (8x16 OBJ pair) — see _build_door_unlock_icon.
+DOOR_UNLOCK_ICON_SOURCE = 0x02f000 + 0x48 * 16
+
+TREASURE_DUMMY_PAL_OFFSET        = 0x09BD05   # TreasureOBPals[$65] — 1 byte (palette index)
 TREASURE_GFX_BASE                = 0x098000   # TreasureGfx[0] — each entry 64 bytes
-TREASURE_PAL_BASE                = 0x09BC20   # TreasureOBPals[0] — each entry 1 byte
+TREASURE_PAL_BASE                = 0x09BCA0   # TreasureOBPals[0] — each entry 1 byte
 KEY_COLOR_PALS = [0x08, 0x05, 0x06, 0x07]    # OBPAL: grey, red, green, blue
 OBPAL_TREASURE_PURPLE = 0x09                  # Combined unlock items
 
@@ -218,6 +237,102 @@ def _encode_icon_from_pixels(pixels, crop_x: int, crop_y: int,
     return encode_tile(0, 0) + encode_tile(1, 0) + encode_tile(0, 1) + encode_tile(1, 1)
 
 
+def _build_door_key_icon(pixels) -> bytes:
+    """The door key popup icon: the handle and keyhole drawn on the vanilla
+    padlock door (main_tiles38 tiles 26/42, sheet pixels x 80-86, y 11-23),
+    cut out of the door panel and centred on a 16x16 canvas.
+      - door-panel pixels (colour 2) reachable from the crop's edge become
+        transparent, as do the 2 door-frame pixels the crop catches;
+      - colour 0 (the knob's shine, the keyhole ring) becomes 1, as 0 is
+        transparent in an icon; 1 becomes 2."""
+    x0, y0, w, h = 80, 11, 7, 13
+    crop = [[pixels[y0 + y][x0 + x] for x in range(w)] for y in range(h)]
+    panel = set()
+    stack = [(y, x) for y in range(h) for x in range(w)
+             if y in (0, h - 1) or x in (0, w - 1)]
+    while stack:
+        y, x = stack.pop()
+        if not (0 <= y < h and 0 <= x < w) or (y, x) in panel or crop[y][x] != 2:
+            continue
+        panel.add((y, x))
+        stack += [(y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)]
+    panel |= {(0, 5), (12, 5)}  # door frame
+    remap = {0: 1, 1: 2, 2: 2, 3: 3}
+    canvas = [[0] * 16 for _ in range(16)]
+    for y in range(h):
+        for x in range(w):
+            if (y, x) not in panel:
+                canvas[1 + y][4 + x] = remap[crop[y][x]]
+    return _encode_icon_from_pixels(canvas, 0, 0)
+
+
+def _build_door_unlock_icon(tiles: bytes) -> bytes:
+    """The underwater door unlock popup icon: the vanilla "!" bubble (the
+    chest-opening pose's), 2 stacked tiles of its left half, the right half
+    their mirror image (as the game draws it, with OAM_XFLIP)."""
+    canvas = [[0] * 16 for _ in range(16)]
+    for t in range(2):
+        for r in range(8):
+            lo, hi = tiles[t * 16 + r * 2], tiles[t * 16 + r * 2 + 1]
+            for c in range(8):
+                p = ((lo >> (7 - c)) & 1) | (((hi >> (7 - c)) & 1) << 1)
+                canvas[t * 8 + r][c] = p
+                canvas[t * 8 + r][15 - c] = p
+    return _encode_icon_from_pixels(canvas, 0, 0)
+
+
+def _build_sign_arrow(pixels) -> bytes:
+    """The message box's down arrow: the vanilla font's (tile 13, 21; text =
+    its 2 lightest colours) as 2 1bpp glyphs, left then right half, shifted
+    so it centres on the line between them (the box's middle)."""
+    rows = [sum((pixels[21 * 8 + r][13 * 8 + c] < 2) << (7 - c) for c in range(8))
+            for r in range(8)]
+    arrow = [row << 3 for row in rows]  # 5 wide at 1-5 -> 6-10 of 16
+    return bytes(v >> 8 for v in arrow) + bytes(v & 0xFF for v in arrow)
+
+
+def _build_vanilla_font_tiles(font: bytes) -> "list[tuple[int, bytes]]":
+    """(offset, bytes) writes for the hack's fonts' letters, which are the
+    vanilla font's (font.2bpp: digits $130, A-P $140, Q-Z $150, dash $15A;
+    ink = colour 0):
+      - MsgFontTiles (tools/build_msg_font.py): 8x16 sprite pairs, ink as
+        colour 1 with a colour-2 drop shadow one pixel down-right, in the
+        order A-Z, 0-9, space, -, &, . (space, & and . are hand-made);
+      - TitleSmallFontGfx / ChecksExtraTilesGfx: 8x8 tiles, ink as colour 3
+        with a colour-2 shadow one pixel down-right."""
+    def ink(tile: int) -> "list[int]":
+        b = font[tile * 16:tile * 16 + 16]
+        return [~(b[2 * r] | b[2 * r + 1]) & 0xFF for r in range(8)]
+
+    def letter(ch: str) -> int:
+        if ch.isdigit():
+            return 0x130 + int(ch)
+        if ch == "-":
+            return 0x15A
+        return 0x140 + ord(ch) - ord("A")
+
+    def sprite_pair(tile: int) -> bytes:
+        body = ink(tile) + [0] * 8                      # 8x16, rows of colour 1
+        shadow = [((body[r - 1] >> 1) & ~body[r]) & 0xFF if r else 0 for r in range(16)]
+        return bytes(x for r in range(16) for x in (body[r], shadow[r]))
+
+    def small(tile: int) -> bytes:
+        k = ink(tile)
+        return bytes(x for r in range(8)
+                     for x in (k[r], k[r] | ((k[r - 1] >> 1) if r else 0)))
+
+    writes = []
+    for i, ch in enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -"):
+        if ch != " ":
+            writes.append((MSG_FONT_TILES_OFFSET + i * 32, sprite_pair(letter(ch))))
+    for i, ch in enumerate("KEYS,BOCHT"):
+        if ch != ",":
+            writes.append((TITLE_SMALL_FONT_OFFSET + i * 16, small(letter(ch))))
+    for i, ch in ((2, "W"), (3, "N"), (5, "D"), (6, "G"), (7, "R")):
+        writes.append((CHECKS_EXTRA_TILES_OFFSET + i * 16, small(letter(ch))))
+    return writes
+
+
 def _build_mirrored_icon(pixels, crop_x: int, crop_y: int, half_w: int, half_h: int) -> bytes:
     """Build a 16x16 icon by horizontally mirroring a half-sprite:
       1. Take a half_w x half_h crop at (crop_x, crop_y) from the source grid.
@@ -291,7 +406,13 @@ SHOPSANITY_MODE_OFFSET           = 0x080F9D   # ShopsanityModeOpt byte in Bank 2
 SHOP_SLOT_ITEMS_OFFSET           = 0x080F9E   # ShopSlotItems table in Bank 20 (10 bytes = treasure ID per shop slot)
 SHOP_SLOT_NAMES_OFFSET           = 0x080FA8   # ShopSlotNamesTable in Bank 20 (10 slots × 20 bytes = 200 bytes, msg-font encoded)
 SHOP_SLOT_KEY_COLORS_OFFSET      = 0x081072   # ShopSlotKeyColors table in Bank 20 (10 bytes, $FF = not a key, 0-3 = grey/red/green/blue)
-HIDDEN_PASSAGES_REVEALED_OFFSET = 0x01FE00  # HiddenPassagesRevealedOpt byte (floating ROMX section — re-check after linker shifts)
+# Locked Doors off: an end mark ($ff) at the top of each door table, so the
+# door system finds no doors, plaques, signposts, palettes or padlock art
+LOCKED_DOORS_TABLE_OFFSET        = 0x023A2A   # LockedDoors
+DOOR_SIGNS_TABLE_OFFSET          = 0x022FA7   # DoorSigns
+DOOR_PALETTES_TABLE_OFFSET       = 0x022C0E   # DoorPalettes
+PADLOCK_LOADS_TABLE_OFFSET       = 0x022F19   # PadlockLoads
+HIDDEN_PASSAGES_REVEALED_OFFSET = 0x01FE3F  # HiddenPassagesRevealedOpt byte (floating ROMX section — re-check after linker shifts)
 GOLF_PRICE_OPT_OFFSET            = 0x003A00   # GolfPriceOpt byte in Home bank
 GOLF_BUILDING_OPT_OFFSET         = 0x003A01   # GolfBuildingOpt byte in Home bank
 DISABLE_PAL_CYCLE_OFFSET         = 0x003A02   # DisablePalCycleOpt byte in Home bank
@@ -308,7 +429,7 @@ GOLF_PAR_HINT_FREQ_OFFSET        = 0x003A6E   # GolfParHintFrequencyOpt byte in 
 # Vanilla source is `$04`; the AP option lets the player pick 1-10 without
 # touching the ROM layout. Re-audit if hidden_figure.asm changes above line 15.
 RUDY_HIT_POINTS_OFFSET           = 0x04CC94
-TREASURE_OB_PALS_OFFSET          = 0x09BC20   # TreasureOBPals table (indexed by treasure ID)
+TREASURE_OB_PALS_OFFSET          = 0x09BCA0   # TreasureOBPals table (indexed by treasure ID)
 
 # Combined-item companion chains: collecting key → also grant value (chained).
 # Tusk Set: $24→$25→$26 (two hops).
@@ -484,6 +605,18 @@ class WL3PatchExtension(APPatchExtension):
                 pixels = _decode_tilemap(raw, width_tiles=16)
             encoded = _encode_icon_from_pixels(pixels, crop_x, crop_y, flip_h=True)
             rom[dest_offset:dest_offset + len(encoded)] = encoded
+        src_offset, src_length = DOOR_KEY_ICON_SOURCE
+        pixels = _decode_tilemap(vanilla[src_offset:src_offset + src_length], width_tiles=16)
+        encoded = _build_door_key_icon(pixels)
+        rom[TREASURE_DOOR_KEY_TILE_OFFSET:TREASURE_DOOR_KEY_TILE_OFFSET + len(encoded)] = encoded
+        encoded = _build_door_unlock_icon(vanilla[DOOR_UNLOCK_ICON_SOURCE:DOOR_UNLOCK_ICON_SOURCE + 32])
+        rom[TREASURE_DOOR_UNLOCK_TILE_OFFSET:TREASURE_DOOR_UNLOCK_TILE_OFFSET + len(encoded)] = encoded
+        src_offset, src_length = VANILLA_FONT_SOURCE
+        font = _wl3_rle_decompress(vanilla[src_offset:src_offset + src_length])
+        encoded = _build_sign_arrow(_decode_tilemap(font, width_tiles=16))
+        rom[SIGN_ARROW_GLYPHS_OFFSET:SIGN_ARROW_GLYPHS_OFFSET + len(encoded)] = encoded
+        for offset, data in _build_vanilla_font_tiles(font):
+            rom[offset:offset + len(data)] = data
         return bytes(rom)
 
     @staticmethod
@@ -1322,6 +1455,11 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
             elif item.name in KEYRING_ITEM_TABLE:
                 # Keyrings aren't in ITEM_TABLE; use the keyring sprite.
                 shop_slot_items[slot] = KEYRING_TREASURE_ID
+            elif item.code is not None and 7_770_600 <= item.code < 7_770_736:  # a door key (ROOM_KEY_BASE_ITEM_ID + door index)
+                # Door keys keep the gem in the shop: the shop slot's id is
+                # also what a purchase grants, and the door key icon ($74)
+                # is display-only.
+                shop_slot_items[slot] = 0x4E
             else:
                 item_data = ITEM_TABLE.get(item.name)
                 if item_data is not None:
@@ -1502,7 +1640,12 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
                 "group_val_mul": shared_level_val_mul,
             })
 
-    if world.options.overworld_bg_palette_shuffle:
+    # Overworld Palette Shuffle: one choice per map side (north, west, south,
+    # east): vanilla, full_shuffle or a season
+    from .options import overworld_palette_sides
+    ow_sides = overworld_palette_sides(world.options.overworld_bg_palette_shuffle, world.random)
+    ow_all_full = all(v == "full_shuffle" for v in ow_sides)
+    if "full_shuffle" in ow_sides:
         # All overworld palettes share ONE hue rotation so adjacent terrain
         # types (mountain / ground / grass / etc — each in its own palette
         # entry) stay thematically related instead of rotating independently
@@ -1522,6 +1665,15 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
         sorted_entries = sorted(OVERWORLD_BG_PALETTES, key=lambda e: e[0])
         for i, (offset, length, _group) in enumerate(sorted_entries):
             if offset in OW_OBJ_PALETTE_OFFSETS:
+                continue
+            # a map side's own palettes (six 40-palette blocks from Pals_84000:
+            # the four sides, then North's and West's all-crayons versions)
+            # follow that side's choice; everything else on the overworld is
+            # only shuffled when all four sides are
+            if 0x84000 <= offset < 0x84000 + 6 * 0x140:
+                if ow_sides[[0, 1, 2, 3, 0, 1][(offset - 0x84000) // 0x140]] != "full_shuffle":
+                    continue
+            elif not ow_all_full:
                 continue
             if i + 1 < len(sorted_entries):
                 next_off = sorted_entries[i + 1][0]
@@ -1547,7 +1699,7 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
         # (Colossal Hole, Warped Void, East Crater, Forest of Fear),
         # forcing every high-level variant to fail its treasure check.
         TITLE_PALETTE_OFFSETS = [0x536a, 0x53aa, 0x53ea, 0x542a]
-        for offset in TITLE_PALETTE_OFFSETS:
+        for offset in (TITLE_PALETTE_OFFSETS if ow_all_full else ()):
             palette_params["overworld_bg"].append({
                 "offset": offset,
                 "length": 64,
@@ -1664,6 +1816,21 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
     patch.write_token(APTokenTypes.WRITE, HIDDEN_PASSAGES_REVEALED_OFFSET,
                       bytes([int(world.options.hidden_passages_revealed)]))
 
+    # Overworld Palette Shuffle, seasons — write each season's colours over
+    # its map side's palettes (only the colours it changes; see
+    # tools/build_ow_seasons.py).
+    from .ow_season_data import OW_SEASON_BLOCK_SIDE, OW_SEASON_PATCHES
+    for block, side in enumerate(OW_SEASON_BLOCK_SIDE):
+        for offset, data in OW_SEASON_PATCHES.get(ow_sides[side], {}).get(block, ()):
+            patch.write_token(APTokenTypes.WRITE, offset, data)
+
+    # Locked Doors off — end every door table at its first row: no door is
+    # locked and no padlock, plaque or signpost is drawn.
+    if not world.options.locked_doors:
+        for offset in (LOCKED_DOORS_TABLE_OFFSET, DOOR_SIGNS_TABLE_OFFSET,
+                       DOOR_PALETTES_TABLE_OFFSET, PADLOCK_LOADS_TABLE_OFFSET):
+            patch.write_token(APTokenTypes.WRITE, offset, bytes([0xFF]))
+
     # --- Random dialog text variants ---
     # tools/build_text_variants.py bundles all compiled RLE blobs from
     # src/text/en/*_variants/ into text_variants.py. We pick one per
@@ -1707,6 +1874,8 @@ def write_tokens(world: "WL3World", patch: WL3ProcedurePatch) -> None:
     }
     patch.write_file("enemizer_params.json",
                      _json.dumps(enemizer_params).encode("utf-8"))
+    # The seed's logic settings, for the offline debug tool's Logic page.
+    patch.write_file("logic.json", _json.dumps(world.logic_settings()).encode("utf-8"))
 
     # Embed the base bsdiff4 patch and token data into self.files so
     # APProcedurePatch.write_contents() includes them in the output zip.
