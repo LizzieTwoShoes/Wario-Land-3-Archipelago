@@ -604,7 +604,7 @@ COIN_RULES: dict = {
         _o(_has("Truck Wheel"),has_vampire_2),                                          #5
         _o(_has("Truck Wheel"),can_fly),                                                #6
         _o(_has("Truck Wheel"),can_fly),                                                #7
-        _c(_o(_has("Foot of Stone"),_has("Roll Form")),has_flippers_1),                                       #8
+        _c(_o(_has("Foot of Stone"),_has("Roll Form")),has_flippers_1),                 #8
     ],
     "The Pool of Rain": [
         _o(_has("Magic Seeds"),_has("Puffy Form")),                                     #1
@@ -792,6 +792,118 @@ COIN_RULES: dict = {
 }
 
 # ---------------------------------------------------------------------------
+# Per-coin access rules (additional requirements beyond the level unlock)
+# Block numbers are labeled in the docs (#todo)
+# ---------------------------------------------------------------------------
+
+COIN_BLOCK_RULES: dict = {
+    "Out of the Woods": [
+        None,                                                                       #1
+        None,                                                                       #2
+        can_pound_cracked_blocks,                                                   #3
+        can_pound_cracked_blocks,                                                   #4
+        can_pound_cracked_blocks,                                                   #5
+    ],
+    "The Peaceful Village": [
+        _o(can_pound_cracked_blocks,_has("Spiked Helmet")),                         #1
+        None,                                                                       #2
+        _o(can_pound_large_solid_blocks,
+           _c(_o(can_shake_screen,_has("Zombie Form")),_has("Garlic"))),            #3
+    ],
+    "The Vast Plain": [
+        can_pound_cracked_blocks,                                                   #1
+        can_pound_cracked_blocks,                                                   #2
+    ],
+    "Bank of the Wild River": [
+        None,                                                                       #1
+        None,                                                                       #2
+    ],
+    "The Tidal Coast": [
+        _c(has_grab_1,has_flippers_1,_has("Spiked Helmet"))                         #1
+    ],
+    "Sea Turtle Rocks": [
+        can_pound_cracked_blocks,                                                   #1
+        _c(can_pound_cracked_blocks,_has("Spiked Helmet")),                         #2                                                   #1
+    ],
+    "Desert Ruins": [
+        None,                                                                       #1
+        _has("Spiked Helmet")                                                       #2
+    ],
+    "The Volcano's Base": [
+        None,                                                                       #1
+        None,                                                                       #2
+        _c(_o(_has("Foot of Stone"),_has("Roll Form")),has_flippers_1),             #3
+    ],
+    "The Pool of Rain": [
+        _has("Magic Seeds")                                                         #1
+    ],
+    "A Town in Chaos": [
+        _c(_o(has_grab_2,can_kill_frogs),
+           _o(_c(has_grab_1,can_shake_screen),can_fly)),                            #1
+        _c(_o(has_grab_2,can_kill_frogs), 
+            _o(_c(can_shake_screen,_has("High Jump Boots")),can_bounce),has_grab_1) #2
+    ],
+    "Beneath the Waves": [
+        has_flippers_1,                                                             #1
+        _c(has_chemicals,has_flippers_1),                                           #2
+    ],
+    "The West Crater": [
+        None,                                                                       #1
+        _o(_c(can_pass_through_fire,can_jump_high),can_fly),                        #2
+        _has("Rust Spray")                                                          #3
+    ],
+    "The Grasslands": [
+        None,                                                                       #1
+        None,                                                                       #2
+        _c(_has("Magic Seeds"),_o(can_pound_cracked_blocks,_has("Zombie Form"))),   #3
+    ],
+    "The Big Bridge": [
+        has_grab_1,                                                                 #1
+    ],
+    "Tower of Revival": [
+        None,                                                                       #1
+        _c(has_golden_eyes,_o(_has("Statue"),can_fly),_has("Garlic"),
+           has_grab_2,_has("Spiked Helmet"), _has("High Jump Boots")),              #2
+    ],
+    "The Steep Canyon": [
+        # No Coin Blocks
+    ],
+    "Cave of Flames": [
+        None,                                                                       #1
+        None,                                                                       #2
+    ],
+    "Above the Clouds": [
+        # No Coin Blocks
+    ],
+    "The Stagnant Swamp": [
+        None,                                                                       #1
+        _o(_has("Zombie Form"),_has("Explosive Plunger Box")),                      #2
+    ],
+    "The Frigid Sea": [
+        _o(has_grab_1, can_fly),                                                    #1
+    ],
+    "Castle of Illusions": [
+        has_grab_1,                                                                 #1
+    ],
+    "The Colossal Hole": [
+        None,                                                                       #1
+        _c(_has("Garlic"),_o(has_grab_1,_has("Zombie Form"))),                       #2
+    ],
+    "The Warped Void": [
+        _o(_c(has_key_cards,has_grab_1,_has("High Jump Boots"),_has("Spiked Helmet")),
+           _c(_has("Warp Removal Apparatus"),can_fly,can_pound_cracked_blocks)),    #1
+        _o(_c(has_key_cards,has_grab_1,_has("High Jump Boots"),_has("Spiked Helmet")),
+           _c(_has("Warp Removal Apparatus"),can_fly,can_pound_cracked_blocks)),    #2
+    ],
+    "The East Crater": [
+        # No Coin Blocks
+    ],
+    "Forest of Fear": [
+        # No Coin Blocks
+    ],
+}
+
+# ---------------------------------------------------------------------------
 # Per-boss access rules (additional requirements beyond the level unlock)
 # Bosses are each their own single location
 # ---------------------------------------------------------------------------
@@ -853,6 +965,7 @@ def set_rules(world: "WL3World") -> None:
     key_logic   = {k: list(v) for k, v in KEY_RULES.items()}
     coin_logic   = {k: list(v) for k, v in COIN_RULES.items()}
     boss_logic = BOSS_RULES.copy()
+    coin_block_logic   = {k: list(v) for k, v in COIN_BLOCK_RULES.items()}
     
     # Difficulty Constants
     knowledge_checks = 1
@@ -925,6 +1038,10 @@ def set_rules(world: "WL3World") -> None:
         coin_logic["The East Crater"][6] = _c(_has("Pick Axe"))
         coin_logic["The East Crater"][7] = _c(_has("Pick Axe"), has_grab_1)
         boss_logic["Yellow Belly"] = _c(_o(can_pound_solid_blocks, _has("Zombie Form")), _o(has_grab_1, can_jump_high), has_overalls_1)
+        coin_block_logic["The Vast Plain"][1] = _o(can_pound_cracked_blocks,_has("Zombie Form"))
+        coin_block_logic["A Town in Chaos"][0] = _c(_o(has_grab_2,can_kill_frogs),_o(can_shake_screen,can_fly))
+        coin_block_logic["A Town in Chaos"][1] = _c(_o(has_grab_2,can_kill_frogs),_o(_c(can_shake_screen,_has("High Jump Boots")),can_bounce))
+        coin_block_logic["The Grasslands"][2] = _c(_o(_has("Magic Seeds"), has_vampire_2), _o(can_pound_cracked_blocks, _has("Zombie Form")))
 
     if difficulty >= hard_logic:
         chest_logic["Out of the Woods"][green] = _o(has_storm_pouch,can_fly)
@@ -1023,6 +1140,9 @@ def set_rules(world: "WL3World") -> None:
         coin_logic["The Frigid Sea"][5] = _c(_has("Scepter"),_o(has_flippers_1,_has("Flat Form")),_has("Spiked Helmet"),_has("High Jump Boots"))
         coin_logic["The Frigid Sea"][6] = _c(_has("Scepter"),_o(has_flippers_1,_has("Flat Form")))
         coin_logic["The Frigid Sea"][7] = _o(has_sun_medallion,has_flippers_2,_has("Flat Form"))
+        coin_block_logic["The Volcano's Base"][2] = _c(_o(_has("Foot of Stone"),_has("Roll Form"),_c(_has("Flat Form"),_has("Spiked Helmet"))),_o(_has("Flat Form"),has_flippers_1),has_grab_1)
+        coin_block_logic["A Town in Chaos"][1] = _c(_o(has_grab_2,can_kill_frogs),_o(_c(can_shake_screen,_has("High Jump Boots")),can_bounce,_c(_has("Flat Form"),_has("Spiked Helmet"))))
+        coin_block_logic["Beneath the Waves"][1] = _c(_o(has_flippers_1,_has("Flat Form")), has_chemicals)
     if glitches >= all_glitches:
         chest_logic["The Peaceful Village"][red] = None
         chest_logic["The Peaceful Village"][green] = _o(can_pound_cracked_blocks,_has("Zombie Form"))
@@ -1049,7 +1169,8 @@ def set_rules(world: "WL3World") -> None:
         chest_logic["The Big Bridge"][green] = _c(_o(has_flippers_1,_has("Flat Form")),_o(has_grab_1,can_fly,can_shake_screen),_o(can_pound_cracked_blocks,_has("Zombie Form")))
         key_logic["The Big Bridge"][blue] = _c(_o(has_flippers_1,_has("Flat Form"),has_grab_1), _o(_has("Garlic"), can_fly))
         coin_logic["The Big Bridge"][7] = _c(_o(has_flippers_1,_has("Flat Form"),has_grab_1),_o(_c(_has("Garlic"),_o(can_shake_screen,can_bounce)),can_fly))
-        coin_logic["Beneath the Waves"][4] = _c(has_chemicals,_o(has_flippers_1,_has("Flat Form")),_o(_c(can_shake_screen,has_grab_1),has_grab_2,can_pass_spikes,can_fly))
+        coin_logic["Beneath the Waves"][4] = _c(has_chemicals,_o(has_flippers_1,_has("Flat Form")),_o(_c(can_shake_screen,has_grab_1),has_grab_2,can_pass_spikes,can_fly))  
+        coin_block_logic["The Volcano's Base"][2] = _c(_o(_has("Foot of Stone"),_has("Roll Form"),_c(_has("Flat Form"),_has("Spiked Helmet"))),_o(_has("Flat Form"),has_flippers_1))
     if glitches >= easy_glitches and difficulty >= hard_logic:
         coin_logic["Out of the Woods"][3] = _o(has_flippers_2,has_storm_pouch,can_fly,_has("Flat Form"))
         chest_logic["Beneath the Waves"][red] = _c(_o(has_flippers_1,_has("Flat Form")))
